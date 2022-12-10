@@ -32,7 +32,7 @@ def do_instruction_p2(line: str, stack: list[list[str]]):
     temp_stack = []
     for _ in range(number):
         temp_stack.append(stack[src].pop())
-    for _ in range(len(temp_stack)):
+    while temp_stack:
         stack[dst].append(temp_stack.pop())
 
 
