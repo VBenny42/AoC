@@ -1,49 +1,66 @@
-DIM_X = 99
-DIM_Y = 99
+# split into two lists for column and row, check if max of each is tree for visibility
+def get_adjacent_cells(x: int, y: int, trees: list[list[int]]) -> list[list[int]]:
+    row = [tree for tree in trees[y]]
+    col = [tree[x] for tree in trees]
+    return (
+        row[:x],
+        row[x + 1 :],
+        col[:y],
+        col[y + 1 :],
+    )
 
 
-def get_adjacent_cells(cell: int, trees: list[int]) -> list[list[int]]:
-    x = cell // DIM_X
-    y = cell % DIM_Y
-    return [
-        [
-            tree
-            for tree in range(DIM_X * DIM_Y)
-            if (tree // DIM_X == x) and tree != cell
-        ],
-        [
-            tree
-            # for tree in range(y, DIMENSIONX * DIMENSIONY, DIMENSIONY)
-            for tree in range(DIM_X * DIM_Y)
-            if (tree % DIM_Y == y) and tree != cell
-        ],
-    ]
+def is_visible(x: int, y: int, trees: list[list[int]]) -> bool:
+    tree_height = trees[y][x]
 
-
-def is_on_edge(cell: int) -> bool:
-    # on west  edge if cell %  99 == 0
-    # on east  edge if cell %  99 == 98 or 99-1
-    # on south edge if cell // 99 == 98 or 99-1
-    # on north edge if cell // 99 == 0
-    return (cell % DIM_Y in {0, DIM_Y - 1}) or (cell // DIM_X in {0, DIM_X - 1})
-
-# split into two lists for columb and route, check if max of each is tree for visibility
-
-def is_visible(cell: int, trees: list[int], adjacent_trees: list[list[int]]):
-    height_to_check = trees[cell]
-    if is_on_edge(cell):
-        # cell is on edge and is therefore visible
+    west_side, east_side, north_side, south_side = get_adjacent_cells(x, y, trees)
+    if (not west_side) or (not east_side) or (not north_side) or (not south_side):
         return True
-    # get edge cells
-    n_s_edges = filter(is_on_edge, adjacent_trees[0])
-    e_w_edges = filter(is_on_edge, adjacent_trees[1])
+    for height in {
+        max(west_side),
+        max(east_side),
+        max(north_side),
+        max(south_side),
+    }:
+        if tree_height > height:
+            return True
+    return False
+
+
+def takewhile_inclusive(predicate, it):
+    for x in it:
+        if predicate(x):
+            yield x
+        else:
+            yield x
+            break
+
+
+def get_score(x: int, y: int, trees: list[list[int]]) -> int:
+    height = trees[y][x]
+    west_side, east_side, north_side, south_side = get_adjacent_cells(x, y, trees)
+    west_score = len(
+        list(takewhile_inclusive(lambda tree: tree < height, reversed(west_side)))
+    )
+    east_score = len(list(takewhile_inclusive(lambda tree: tree < height, east_side)))
+    north_score = len(
+        list(takewhile_inclusive(lambda tree: tree < height, reversed(north_side)))
+    )
+    south_score = len(list(takewhile_inclusive(lambda tree: tree < height, south_side)))
+    return west_score * east_score * north_score * south_score
 
 
 with open("input.txt", "r", encoding="utf-8") as file:
-    trees: list[int] = [
-        tree
-        for line in file
-        for tree in list(map(int, [char for char in line.strip()]))
-    ]
-    print(get_adjacent_cells(0, trees))
-    print(is_visible(0, trees, get_adjacent_cells(0, trees)))
+    trees: list[list[int]] = [[int(char) for char in line.strip()] for line in file]
+    # assuming matrix is square
+    dimension: int = len(trees)
+    count: int = 0
+    max_score: int = 0
+    score: int = 0
+    for y in range(dimension):
+        for x in range(dimension):
+            count += int(is_visible(x, y, trees))
+            if (score := get_score(x, y, trees)) > max_score:
+                max_score = score
+    print(count)
+    print(max_score)
