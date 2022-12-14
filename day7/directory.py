@@ -9,7 +9,7 @@ def build_directory_structure(parsed_input: list[list[str]]) -> dict[str, int]:
                 cur_path = line[2]
                 directories.setdefault(cur_path, 0)
             case [_, "cd", ".."]:
-                cur_size = directories.get(cur_path)
+                cur_size = directories[cur_path]
                 path.pop()
                 cur_path = "".join(path)
                 directories[cur_path] += cur_size
@@ -22,7 +22,7 @@ def build_directory_structure(parsed_input: list[list[str]]) -> dict[str, int]:
                 directories[cur_path] += int(num)
 
     for _ in range(len(path) - 1):
-        cur_size = directories.get(cur_path)
+        cur_size = directories[cur_path]
         path.pop()
         cur_path = "".join(path)
         directories[cur_path] += cur_size
