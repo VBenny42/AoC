@@ -39,14 +39,14 @@ def takewhile_inclusive(predicate, it):
 def get_score(x: int, y: int, trees: list[list[int]]) -> int:
     height = trees[y][x]
     west_side, east_side, north_side, south_side = get_adjacent_cells(x, y, trees)
-    west_score = len(
-        list(takewhile_inclusive(lambda tree: tree < height, reversed(west_side)))
-    )
-    east_score = len(list(takewhile_inclusive(lambda tree: tree < height, east_side)))
-    north_score = len(
-        list(takewhile_inclusive(lambda tree: tree < height, reversed(north_side)))
-    )
-    south_score = len(list(takewhile_inclusive(lambda tree: tree < height, south_side)))
+
+    def get_side_score(tree_side: list[int]) -> int:
+        return len(list(takewhile_inclusive(lambda tree: tree < height, tree_side)))
+
+    west_score = get_side_score(reversed(west_side))
+    east_score = get_side_score(east_side)
+    north_score = get_side_score(reversed(north_side))
+    south_score = get_side_score(south_side)
     return west_score * east_score * north_score * south_score
 
 
