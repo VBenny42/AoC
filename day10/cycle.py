@@ -40,7 +40,7 @@ x = 1
 
 
 def cycle_drawer():
-    global cycle_count, x
+    global cycle_count
     print("#" if cycle_count % ROW_SIZE in set(range(x - 1, x + 2)) else ".", end="")
     cycle_count += 1
     if cycle_count % ROW_SIZE == 0:
