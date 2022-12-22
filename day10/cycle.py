@@ -10,8 +10,7 @@ signal_strength_sum = 0
 
 
 def cycle_counter():
-    global cycle_count
-    global index_check
+    global cycle_count, index_check
     cycle_count += 1
     if cycle_count == cycle_checks[index_check]:
         global signal_strength_sum
