@@ -49,7 +49,6 @@ def do_direction_p1(
 
 
 def update_head(head, direction: str):
-    # print(direction)
     match direction:
         case "R":
             head[1] += 1
@@ -62,7 +61,7 @@ def update_head(head, direction: str):
     return head
 
 
-def update_tail(head, tail):
+def update_tail(head: np.array, tail):
     dirset = {
         (2, 1): (1, 1),
         (1, 2): (1, 1),
@@ -100,7 +99,6 @@ with open("input.txt", "r") as file:
                 )
             tail_past.add(tuple(rope_stack[-1]))
     print(len(tail_past))
-    # print(tail_past)
 
     # plt.rcParams["figure.autolayout"] = True
 
