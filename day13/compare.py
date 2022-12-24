@@ -1,6 +1,6 @@
 from itertools import zip_longest
 
-with open("small_input.txt", "r") as file:
+with open("input.txt", "r") as file:
     pair_list = []
     pair = []
     for line in file:
