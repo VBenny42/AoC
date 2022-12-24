@@ -53,11 +53,10 @@ def pair_eval_retry(pair):
             if l < r:
                 return True
         else:
-            if isinstance(r, int):
-                r = [r]
             if isinstance(l, int):
                 l = [l]
-
+            if isinstance(r, int):
+                r = [r]
             ret = pair_eval_retry([l, r])
             if ret in [True, False]:
                 return ret
