@@ -1,0 +1,2 @@
+1. Separate input lists into 2 files.
+2. Sort input using `sort --numeric-sort input2.txt --output=input2-sorted.txt`
