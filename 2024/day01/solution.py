@@ -1,6 +1,4 @@
 def main1():
-    diff_sum = 0
-
     with open("input1-sorted.txt", "rb") as i1:
         i1_lines = i1.readlines()
         i1_lines = map(int, i1_lines)
@@ -8,9 +6,7 @@ def main1():
         i2_lines = i2.readlines()
         i2_lines = map(int, i2_lines)
 
-    for line1, line2 in zip(i1_lines, i2_lines):
-        diff = abs(line1 - line2)
-        diff_sum += diff
+    diff_sum = sum(abs(line1 - line2) for line1, line2 in zip(i1_lines, i2_lines))
     print(diff_sum)
 
 
