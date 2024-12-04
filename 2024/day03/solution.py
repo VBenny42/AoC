@@ -19,7 +19,7 @@ def get_result2(line: str) -> int:
     sum = 0
     enabled = True
     for match in matches:
-        # Perform the multiplication only if enabled
+        # Perform the multiplication only if enabled true, continue otherwise
         if match.group(1) and enabled:
             a, b = map(int, match.group(1).split(","))
             sum += a * b
@@ -35,7 +35,7 @@ def get_result2(line: str) -> int:
 def main1():
     with open("input.txt", "r") as f:
         lines = f.readlines()
-    print(f"LOG: main1 {sum(get_result1(line) for line in lines)}")
+    print(f"LOG: main1 answer {sum(get_result1(line) for line in lines)}")
 
 
 def main2():
@@ -43,7 +43,7 @@ def main2():
         lines = f.readlines()
     # Need to join the lines, as do/don't state carries over to the next line
     joined = "".join(lines)
-    print(f"LOG: main2 {get_result2(joined)}")
+    print(f"LOG: main2 answer {get_result2(joined)}")
 
 
 if __name__ == "__main__":
