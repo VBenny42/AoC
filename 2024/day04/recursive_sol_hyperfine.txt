@@ -1,0 +1,4 @@
+hyperfine "python solution.py" --warmup 10                                       (main)
+Benchmark 1: python solution.py
+  Time (mean ± σ):     715.8 ms ±   9.2 ms    [User: 667.4 ms, System: 9.6 ms]
+  Range (min … max):   704.5 ms … 730.7 ms    10 runs

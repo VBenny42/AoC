@@ -138,7 +138,7 @@ def is_x_mas_match(grid: list[list[str]], coord: Coordinate) -> bool:
 
 
 def xmas_matches2(grid: list[list[str]]) -> int:
-    matches = set()
+    matches = 0
     for y in range(len(grid)):
         for x in range(len(grid[y])):
             if grid[y][x] == "A":
@@ -147,8 +147,8 @@ def xmas_matches2(grid: list[list[str]]) -> int:
                 c.y = y
                 match = is_x_mas_match(grid, c)
                 if match:
-                    matches.add(c)
-    return len(matches)
+                    matches += 1
+    return matches
 
 
 def main1():
