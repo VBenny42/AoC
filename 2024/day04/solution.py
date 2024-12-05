@@ -4,6 +4,10 @@ from enum import Enum
 class Coordinate:
     __slots__ = ("x", "y")
 
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
 
 class Directions(Enum):
     UP = 1
@@ -22,45 +26,21 @@ def get_adjacent_letters(
     x, y = coord.x, coord.y
     adjacent = {}
     if x > 0:
-        c = Coordinate()
-        c.x = x - 1
-        c.y = y
-        adjacent[Directions.LEFT] = (grid[y][x - 1], c)
+        adjacent[Directions.LEFT] = (grid[y][x - 1], Coordinate(x - 1, y))
     if x < len(grid[y]) - 1:
-        c = Coordinate()
-        c.x = x + 1
-        c.y = y
-        adjacent[Directions.RIGHT] = (grid[y][x + 1], c)
+        adjacent[Directions.RIGHT] = (grid[y][x + 1], Coordinate(x + 1, y))
     if y > 0:
-        c = Coordinate()
-        c.x = x
-        c.y = y - 1
-        adjacent[Directions.UP] = (grid[y - 1][x], c)
+        adjacent[Directions.UP] = (grid[y - 1][x], Coordinate(x, y - 1))
     if y < len(grid) - 1:
-        c = Coordinate()
-        c.x = x
-        c.y = y + 1
-        adjacent[Directions.DOWN] = (grid[y + 1][x], c)
+        adjacent[Directions.DOWN] = (grid[y + 1][x], Coordinate(x, y + 1))
     if x > 0 and y > 0:
-        c = Coordinate()
-        c.x = x - 1
-        c.y = y - 1
-        adjacent[Directions.UP_LEFT] = (grid[y - 1][x - 1], c)
+        adjacent[Directions.UP_LEFT] = (grid[y - 1][x - 1], Coordinate(x - 1, y - 1))
     if x < len(grid[y]) - 1 and y > 0:
-        c = Coordinate()
-        c.x = x + 1
-        c.y = y - 1
-        adjacent[Directions.UP_RIGHT] = (grid[y - 1][x + 1], c)
+        adjacent[Directions.UP_RIGHT] = (grid[y - 1][x + 1], Coordinate(x + 1, y - 1))
     if x > 0 and y < len(grid) - 1:
-        c = Coordinate()
-        c.x = x - 1
-        c.y = y + 1
-        adjacent[Directions.DOWN_LEFT] = (grid[y + 1][x - 1], c)
+        adjacent[Directions.DOWN_LEFT] = (grid[y + 1][x - 1], Coordinate(x - 1, y + 1))
     if x < len(grid[y]) - 1 and y < len(grid) - 1:
-        c = Coordinate()
-        c.x = x + 1
-        c.y = y + 1
-        adjacent[Directions.DOWN_RIGHT] = (grid[y + 1][x + 1], c)
+        adjacent[Directions.DOWN_RIGHT] = (grid[y + 1][x + 1], Coordinate(x + 1, y + 1))
     return adjacent
 
 
@@ -102,10 +82,7 @@ def xmas_matches1(grid: list[list[str]]) -> int:
     for y in range(len(grid)):
         for x in range(len(grid[y])):
             for direction in Directions:
-                c = Coordinate()
-                c.x = x
-                c.y = y
-                match = is_xmas_match(grid, c, [], direction)
+                match = is_xmas_match(grid, Coordinate(x, y), [], direction)
                 if match:
                     matches += 1
 
@@ -138,10 +115,7 @@ def xmas_matches2(grid: list[list[str]]) -> int:
     for y in range(len(grid)):
         for x in range(len(grid[y])):
             if grid[y][x] == "A":
-                c = Coordinate()
-                c.x = x
-                c.y = y
-                match = is_x_mas_match(grid, c)
+                match = is_x_mas_match(grid, Coordinate(x, y))
                 if match:
                     matches += 1
     return matches
