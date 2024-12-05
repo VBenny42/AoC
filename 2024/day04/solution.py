@@ -1,6 +1,4 @@
-from collections import Counter
 from enum import Enum
-from pprint import pprint
 
 
 class Coordinate:
