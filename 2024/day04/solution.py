@@ -5,7 +5,7 @@ class Coordinate:
     __slots__ = ("x", "y")
 
 
-class Direction(Enum):
+class Directions(Enum):
     UP = 1
     DOWN = 2
     LEFT = 3
@@ -18,49 +18,49 @@ class Direction(Enum):
 
 def get_adjacent_letters(
     coord: Coordinate, grid: list[list[str]]
-) -> dict[Direction, tuple[str, Coordinate]]:
+) -> dict[Directions, tuple[str, Coordinate]]:
     x, y = coord.x, coord.y
     adjacent = {}
     if x > 0:
         c = Coordinate()
         c.x = x - 1
         c.y = y
-        adjacent[Direction.LEFT] = (grid[y][x - 1], c)
+        adjacent[Directions.LEFT] = (grid[y][x - 1], c)
     if x < len(grid[y]) - 1:
         c = Coordinate()
         c.x = x + 1
         c.y = y
-        adjacent[Direction.RIGHT] = (grid[y][x + 1], c)
+        adjacent[Directions.RIGHT] = (grid[y][x + 1], c)
     if y > 0:
         c = Coordinate()
         c.x = x
         c.y = y - 1
-        adjacent[Direction.UP] = (grid[y - 1][x], c)
+        adjacent[Directions.UP] = (grid[y - 1][x], c)
     if y < len(grid) - 1:
         c = Coordinate()
         c.x = x
         c.y = y + 1
-        adjacent[Direction.DOWN] = (grid[y + 1][x], c)
+        adjacent[Directions.DOWN] = (grid[y + 1][x], c)
     if x > 0 and y > 0:
         c = Coordinate()
         c.x = x - 1
         c.y = y - 1
-        adjacent[Direction.UP_LEFT] = (grid[y - 1][x - 1], c)
+        adjacent[Directions.UP_LEFT] = (grid[y - 1][x - 1], c)
     if x < len(grid[y]) - 1 and y > 0:
         c = Coordinate()
         c.x = x + 1
         c.y = y - 1
-        adjacent[Direction.UP_RIGHT] = (grid[y - 1][x + 1], c)
+        adjacent[Directions.UP_RIGHT] = (grid[y - 1][x + 1], c)
     if x > 0 and y < len(grid) - 1:
         c = Coordinate()
         c.x = x - 1
         c.y = y + 1
-        adjacent[Direction.DOWN_LEFT] = (grid[y + 1][x - 1], c)
+        adjacent[Directions.DOWN_LEFT] = (grid[y + 1][x - 1], c)
     if x < len(grid[y]) - 1 and y < len(grid) - 1:
         c = Coordinate()
         c.x = x + 1
         c.y = y + 1
-        adjacent[Direction.DOWN_RIGHT] = (grid[y + 1][x + 1], c)
+        adjacent[Directions.DOWN_RIGHT] = (grid[y + 1][x + 1], c)
     return adjacent
 
 
@@ -68,11 +68,9 @@ def is_xmas_match(
     grid: list[list[str]],
     coord: Coordinate,
     current_match: list[Coordinate],
-    current_direction: Direction,
+    current_direction: Directions,
 ) -> list[Coordinate]:
     xmas = "XMAS"
-    if len(current_match) == len(xmas):
-        return current_match
 
     adjacent = get_adjacent_letters(coord, grid)
     adjacent_letter = adjacent.get(current_direction, None)
@@ -99,27 +97,27 @@ def is_xmas_match(
 
 # For each letter in the grid, check if the adjacent letters can continue xmas
 def xmas_matches1(grid: list[list[str]]) -> int:
-    matches = set()
+    matches = 0
 
     for y in range(len(grid)):
         for x in range(len(grid[y])):
-            for direction in Direction:
+            for direction in Directions:
                 c = Coordinate()
                 c.x = x
                 c.y = y
                 match = is_xmas_match(grid, c, [], direction)
                 if match:
-                    matches.add(tuple(match))
+                    matches += 1
 
-    return len(matches)
+    return matches
 
 
 def is_x_mas_match(grid: list[list[str]], coord: Coordinate) -> bool:
     corners = {
-        Direction.UP_LEFT,
-        Direction.UP_RIGHT,
-        Direction.DOWN_LEFT,
-        Direction.DOWN_RIGHT,
+        Directions.UP_LEFT,
+        Directions.UP_RIGHT,
+        Directions.DOWN_LEFT,
+        Directions.DOWN_RIGHT,
     }
     adjacent = get_adjacent_letters(coord, grid)
     # For an X-MAS match, A must have letters in all 4 corners
@@ -127,10 +125,10 @@ def is_x_mas_match(grid: list[list[str]], coord: Coordinate) -> bool:
         return False
     # For an X-MAS match, There must be an M and an S in each of the diagonals
     return (
-        {adjacent[Direction.UP_LEFT][0], adjacent[Direction.DOWN_RIGHT][0]}
+        {adjacent[Directions.UP_LEFT][0], adjacent[Directions.DOWN_RIGHT][0]}
         == {"M", "S"}
     ) and (
-        {adjacent[Direction.UP_RIGHT][0], adjacent[Direction.DOWN_LEFT][0]}
+        {adjacent[Directions.UP_RIGHT][0], adjacent[Directions.DOWN_LEFT][0]}
         == {"M", "S"}
     )
 
