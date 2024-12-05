@@ -47,32 +47,30 @@ def get_adjacent_letters(
 def is_xmas_match(
     grid: list[list[str]],
     coord: Coordinate,
-    current_match: list[Coordinate],
-    current_direction: Directions,
-) -> list[Coordinate]:
+    current_match: str,
+    direction: Directions,
+) -> bool:
     xmas = "XMAS"
 
     adjacent = get_adjacent_letters(coord, grid)
-    adjacent_letter = adjacent.get(current_direction, None)
+    adjacent_letter = adjacent.get(direction, None)
     if adjacent_letter is None:
-        return []
+        return False
 
-    potential_xmas = (
-        "".join(grid[c.y][c.x] for c in current_match)
-        + grid[coord.y][coord.x]
-        + adjacent_letter[0]
-    )
+    letter = grid[coord.y][coord.x]
+
+    potential_xmas = current_match + letter + adjacent_letter[0]
 
     if xmas.startswith(potential_xmas):
         if len(potential_xmas) == len(xmas):
-            return current_match + [coord, adjacent_letter[1]]
+            return True
         return is_xmas_match(
             grid,
             adjacent_letter[1],
-            current_match + [coord],
-            current_direction,
+            current_match + letter,
+            direction,
         )
-    return []
+    return False
 
 
 # For each letter in the grid, check if the adjacent letters can continue xmas
@@ -82,10 +80,9 @@ def xmas_matches1(grid: list[list[str]]) -> int:
     for y in range(len(grid)):
         for x in range(len(grid[y])):
             for direction in Directions:
-                match = is_xmas_match(grid, Coordinate(x, y), [], direction)
-                if match:
-                    matches += 1
-
+                matches += (
+                    1 if is_xmas_match(grid, Coordinate(x, y), "", direction) else 0
+                )
     return matches
 
 
