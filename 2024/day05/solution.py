@@ -34,8 +34,7 @@ def is_valid1(update: tuple[int, ...], ruleset: dict[int, set[int]]) -> bool:
 
 
 def is_valid2(update: tuple[int, ...], ruleset: dict[int, set[int]]) -> bool:
-    compare_with_ruleset = lambda a, b: compare(ruleset, a, b)
-    return sorted(update, key=cmp_to_key(compare_with_ruleset)) == list(update)
+    return reordering(update, ruleset) == update
 
 
 def compare(ruleset, a, b):
@@ -108,8 +107,8 @@ def main2():
     sum = 0
     for update in updates:
         if not is_valid2(update, ruleset):
-            valid_ordering = reordering(update, ruleset)
-            sum += valid_ordering[(len(valid_ordering) - 1) // 2]
+            valid_reordering = reordering(update, ruleset)
+            sum += valid_reordering[(len(valid_reordering) - 1) // 2]
     print(f"LOGF: {sum = }")
 
 
