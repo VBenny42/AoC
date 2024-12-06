@@ -114,15 +114,12 @@ def does_induce_loop(
 
 
 def find_loops(grid: list[list[str]], position: Coordinate) -> int:
-    sum = 0
-    for y, row in enumerate(grid):
-        for x, cell in enumerate(row):
-            if cell == "#":
-                continue
-            if cell == "^":
-                continue
-            sum += does_induce_loop(grid, Coordinate(x, y), position)
-    return sum
+    return sum(
+        does_induce_loop(grid, Coordinate(x, y), position)
+        for y, row in enumerate(grid)
+        for x, cell in enumerate(row)
+        if cell == "X"
+    )
 
 
 def worker(task):
@@ -135,7 +132,7 @@ def find_loops_multiprocessing(grid: list[list[str]], position: Coordinate) -> i
         (grid, Coordinate(x, y), position)
         for y, row in enumerate(grid)
         for x, cell in enumerate(row)
-        if cell not in {"#", "^"}
+        if cell == "X"
     )
 
     with Pool() as pool:
@@ -149,6 +146,7 @@ def print_grid(grid):
         print("".join(row))
 
 
+@timer_func
 def main1():
     with open("input.txt") as f:
         grid = [list(line.strip()) for line in f]
@@ -162,7 +160,8 @@ def main2():
     with open("input.txt") as f:
         grid = [list(line.strip()) for line in f]
     starting_position = get_starting_position(grid)
-    print(f"LOG: ways to induce a loop = {find_loops(grid, starting_position)}")
+    marked_grid = mark_guard_path(grid, starting_position)
+    print(f"LOG: ways to induce a loop = {find_loops(marked_grid, starting_position)}")
 
 
 @timer_func
@@ -170,8 +169,9 @@ def main3():
     with open("input.txt") as f:
         grid = [list(line.strip()) for line in f]
     starting_position = get_starting_position(grid)
+    marked_grid = mark_guard_path(grid, starting_position)
     print(
-        f"LOG: ways to induce a loop = {find_loops_multiprocessing(grid, starting_position)}"
+        f"LOG: ways to induce a loop = {find_loops_multiprocessing(marked_grid, starting_position)}"
     )
 
 
