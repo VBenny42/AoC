@@ -2,6 +2,7 @@ from enum import Enum, auto
 from itertools import cycle
 from multiprocessing import Pool
 from time import time
+from typing import DefaultDict
 
 
 def timer_func(func):
@@ -26,6 +27,12 @@ class Coordinate:
 
     def __repr__(self) -> str:
         return f"Coordinate({self.x}, {self.y})"
+
+    def __eq__(self, other) -> bool:
+        return self.x == other.x and self.y == other.y
+
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
 
 
 class Directions(Enum):
@@ -89,8 +96,7 @@ def mark_guard_path(grid: list[list[str]], position: Coordinate) -> list[list[st
 def does_induce_loop(
     grid: list[list[str]], possible_obstruction: Coordinate, position: Coordinate
 ) -> bool:
-    grid_copy: list = [row.copy() for row in grid]
-    grid_copy[possible_obstruction.y][possible_obstruction.x] = "#"
+    visited_positions = DefaultDict(set)
     directions = cycle(Directions)
     current_direction = next(directions)
     next_position = None
@@ -98,15 +104,18 @@ def does_induce_loop(
     try:
         while True:
             next_position = get_next_position(grid_bounds, position, current_direction)
-            if grid_copy[next_position.y][next_position.x] == "#":
+            if (
+                grid[next_position.y][next_position.x] == "#"
+                or next_position == possible_obstruction
+            ):
                 current_direction = next(directions)
                 continue
-            if type(grid_copy[position.y][position.x]) == set:
-                if current_direction.value in grid_copy[position.y][position.x]:
-                    return True
-                grid_copy[position.y][position.x].add(current_direction.value)
-            else:
-                grid_copy[position.y][position.x] = {current_direction.value}
+            if (
+                position in visited_positions
+                and current_direction in visited_positions[position]
+            ):
+                return True
+            visited_positions[position].add(current_direction)
             position = next_position
     # Reached an edge of the grid, no loop found
     except IndexError:
