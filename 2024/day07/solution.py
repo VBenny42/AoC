@@ -21,10 +21,10 @@ def timer_func(func):
 
 def is_valid_equation(equation: Equation, operators) -> bool:
     desired_value, numbers = equation
-    if len(numbers) == 2:
-        return any(desired_value == op(*numbers) for op in operators)
     if numbers[0] > desired_value:
         return False
+    if len(numbers) == 2:
+        return any(desired_value == op(*numbers) for op in operators)
     # More than 2 remaining_numbers
     # Solve for the first two numbers and recurse
     first, second, *remaining_numbers = numbers
@@ -54,7 +54,7 @@ def is_valid_equation_p1(equation: Equation) -> bool:
     last = numbers[-1]
     mult, add = False, False
     if desired_value % last == 0:
-        mult = is_valid_equation_p1((int(desired_value / last), numbers[:-1]))
+        mult = is_valid_equation_p1((desired_value // last, numbers[:-1]))
     if desired_value - last >= 0:
         add = is_valid_equation_p1((desired_value - last, numbers[:-1]))
     return any([mult, add])
@@ -71,7 +71,7 @@ def is_valid_equation_p2(equation: Equation) -> bool:
     last = numbers[-1]
     mult, add, concat = False, False, False
     if desired_value % last == 0:
-        mult = is_valid_equation_p2((int(desired_value / last), numbers[:-1]))
+        mult = is_valid_equation_p2((desired_value // last, numbers[:-1]))
     if desired_value - last >= 0:
         add = is_valid_equation_p2((desired_value - last, numbers[:-1]))
     if concat := ends_with(desired_value, last):
