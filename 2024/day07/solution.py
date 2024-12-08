@@ -36,6 +36,10 @@ def is_valid_equation(equation: Equation, operators) -> bool:
     )
 
 
+def concat_op(a, b):
+    return a * (10 ** ceil(log10(b + 1))) + b
+
+
 def ends_with(a: int, b: int) -> int:
     str_a, str_b = str(a), str(b)
     if str_a.endswith(str_b):
@@ -79,15 +83,10 @@ def is_valid_equation_p2(equation: Equation) -> bool:
     return any([mult, add, concat])
 
 
-def concat_op(a, b):
-    return a * (10 ** ceil(log10(b + 1))) + b
-
-
 def print_equation(equation: Equation) -> None:
     desired_value, numbers = equation
     print(desired_value, end=": ")
-    print(" ".join(map(str, numbers)), end="")
-    print()
+    print(" ".join(map(str, numbers)))
 
 
 @timer_func
