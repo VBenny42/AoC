@@ -23,6 +23,8 @@ def is_valid_equation(equation: Equation, operators) -> bool:
     desired_value, numbers = equation
     if len(numbers) == 2:
         return any(desired_value == op(*numbers) for op in operators)
+    if numbers[0] > desired_value:
+        return False
     # More than 2 remaining_numbers
     # Solve for the first two numbers and recurse
     first, second, *remaining_numbers = numbers
@@ -126,7 +128,7 @@ def main2_forward():
         ]
 
     print(
-        f"LOGF: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul, concat_op}))}"
+        f"LOGF: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul, concat_op}))}"
     )
 
 
