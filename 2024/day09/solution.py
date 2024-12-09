@@ -69,15 +69,12 @@ def swap_file(diskmap: list, file: tuple):
     file_index = diskmap.index(file)
     free_space_index = -1
 
-    for i in range(len(diskmap)):
+    for i in range(file_index):
         if diskmap[i][0] == FREE_SPACE and diskmap[i][1] >= file[1]:
             free_space_index = i
             break
 
     if free_space_index == -1:
-        return
-
-    if free_space_index > file_index:
         return
 
     if diskmap[free_space_index][1] > file[1]:
