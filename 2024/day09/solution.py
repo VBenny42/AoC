@@ -1,3 +1,4 @@
+import heapq
 from itertools import takewhile
 
 FREE_SPACE = "."
@@ -16,6 +17,31 @@ def convert(line: list) -> list:
                 diskmap.append(id)
             id += 1
         is_freespace = not is_freespace
+    return diskmap
+
+
+def convert_with_heaps(line: list) -> tuple[list, list]:
+    is_freespace = False
+    id = 0
+    diskmap = []
+    heaps = [[] for _ in range(10)]
+    index = 0
+    for i in line:
+        if is_freespace:
+            heaps[i].append(index)
+            for _ in range(i):
+                diskmap.append(FREE_SPACE)
+        else:
+            for _ in range(i):
+                diskmap.append(id)
+            id += 1
+        is_freespace = not is_freespace
+        index += i
+    return diskmap, heaps
+
+
+def make_contiguous2_heap(diskmap: list, heaps: list) -> list:
+
     return diskmap
 
 
@@ -132,6 +158,20 @@ def main2():
     print(f"LOGF: checksum for contiguous files {checksum(contiguous_diskmap)}")
 
 
+def main3():
+    with open("sample-input.txt", "r") as f:
+        line = f.read().strip()
+        int_line = [int(x) for x in line]
+    diskmap, heaps = convert_with_heaps(int_line)
+    contiguous_diskmap = make_contiguous2_heap(diskmap, heaps)
+    print(f"LOG: { contiguous_diskmap = }")
+    checksum = sum(
+        i * id for i, id in enumerate(contiguous_diskmap) if id != FREE_SPACE
+    )
+    print(f"LOGF: {checksum = }")
+
+
 if __name__ == "__main__":
-    main1()
-    main2()
+    # main1()
+    # main2()
+    main3()
