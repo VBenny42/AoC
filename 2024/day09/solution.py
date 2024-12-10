@@ -25,10 +25,10 @@ def convert_with_heaps(line: list) -> tuple[list, list]:
     id = 0
     diskmap = []
     heaps = [[] for _ in range(10)]
-    index = 0
     for i in line:
         if is_freespace:
-            heaps[i].append(index)
+            # Push index of free space to the heap of the size of the free space
+            heapq.heappush(heaps[i], len(diskmap))
             for _ in range(i):
                 diskmap.append(FREE_SPACE)
         else:
@@ -36,11 +36,45 @@ def convert_with_heaps(line: list) -> tuple[list, list]:
                 diskmap.append(id)
             id += 1
         is_freespace = not is_freespace
-        index += i
     return diskmap, heaps
 
 
 def make_contiguous2_heap(diskmap: list, heaps: list) -> list:
+    index = len(diskmap) - 1
+    while index >= 0:
+        if diskmap[index] == FREE_SPACE:
+            index -= 1
+            continue
+
+        id = diskmap[index]
+        file_width = 0
+        # Get the width of the file
+        while index >= 0 and diskmap[index] == id:
+            file_width += 1
+            index -= 1
+
+        best_width = -1
+        smallest_index = len(diskmap)
+        # Find the leftmost index of free space that can fit the file
+        for width in range(file_width, 10):
+            if heaps[width]:
+                if smallest_index > heaps[width][0]:
+                    smallest_index = heaps[width][0]
+                    best_width = width
+
+        if smallest_index == len(diskmap):
+            continue
+        if smallest_index > index:
+            continue
+
+        # Remove the smallest index from the heap
+        # In-place swap the file with the free space
+        heapq.heappop(heaps[best_width])
+        for j in range(file_width):
+            diskmap[smallest_index + j] = id
+            diskmap[index + j + 1] = FREE_SPACE
+        # Push the new smaller free space to the heap
+        heapq.heappush(heaps[best_width - file_width], smallest_index + file_width)
 
     return diskmap
 
@@ -159,12 +193,11 @@ def main2():
 
 
 def main3():
-    with open("sample-input.txt", "r") as f:
+    with open("input.txt", "r") as f:
         line = f.read().strip()
         int_line = [int(x) for x in line]
     diskmap, heaps = convert_with_heaps(int_line)
     contiguous_diskmap = make_contiguous2_heap(diskmap, heaps)
-    print(f"LOG: { contiguous_diskmap = }")
     checksum = sum(
         i * id for i, id in enumerate(contiguous_diskmap) if id != FREE_SPACE
     )
@@ -172,6 +205,6 @@ def main3():
 
 
 if __name__ == "__main__":
-    # main1()
+    main1()
     # main2()
     main3()
