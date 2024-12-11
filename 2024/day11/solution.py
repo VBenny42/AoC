@@ -17,19 +17,23 @@ def apply_rules(stone: int) -> List[int]:
 
     return [stone * 2024]
 
+
 @cache
-def apply_rules_recursive(stone: int, iterations: int) -> int:
-    if iterations == 0:
+def apply_rules_recursive(stone: int, blinks: int) -> int:
+    if blinks == 0:
         return 1
     if stone == 0:
-        return apply_rules_recursive(1, iterations - 1)
+        return apply_rules_recursive(1, blinks - 1)
     length = floor(log10(stone)) + 1
     if length % 2 == 0:
         split_point = length // 2
         first_half = stone // 10**split_point
         second_half = stone % 10**split_point
-        return apply_rules_recursive(first_half, iterations - 1) + apply_rules_recursive(second_half, iterations - 1)
-    return apply_rules_recursive(stone * 2024, iterations - 1)
+        return apply_rules_recursive(first_half, blinks - 1) + apply_rules_recursive(
+            second_half, blinks - 1
+        )
+    return apply_rules_recursive(stone * 2024, blinks - 1)
+
 
 def blink(stones: List[int]) -> list[int]:
     return [new_stone for stone in stones for new_stone in apply_rules(stone)]
@@ -46,6 +50,13 @@ def main1():
     print(f"LOGF: { len(stones) = }")
 
 
+def main3():
+    with open("input.txt", "r") as f:
+        stones = list(map(int, f.read().split()))
+    stones = blink_recursive(stones, 25)
+    print(f"LOG: { stones = }")
+
+
 def main2():
     with open("input.txt", "r") as f:
         stones = list(map(int, f.read().split()))
@@ -54,5 +65,6 @@ def main2():
 
 
 if __name__ == "__main__":
-    main1()
+    # main1()
+    main3()
     main2()
