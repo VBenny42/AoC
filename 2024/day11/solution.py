@@ -38,6 +38,7 @@ def apply_rules_recursive(stone: int, blinks: int) -> int:
 def blink(stones: List[int]) -> list[int]:
     return [new_stone for stone in stones for new_stone in apply_rules(stone)]
 
+
 def blink_recursive(stones: List[int], iterations: int) -> int:
     return sum(apply_rules_recursive(stone, iterations) for stone in stones)
 
