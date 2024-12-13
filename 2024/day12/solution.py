@@ -245,6 +245,31 @@ def calculate_corners(
     return len(corners)
 
 
+def count_sides(region: Set[Coordinate]) -> int:
+    side_count = 0
+    for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+        visited = set()
+        for plot in region:
+            if plot in visited:
+                continue
+
+            x, y = plot
+            # Adjacent plot also in region, no need to count
+            if (x + dx, y + dy) in region:
+                continue
+            # Adjacent cell not in region, count the side
+            side_count += 1
+
+            for direction in (-1, 1):
+                fx, fy = plot
+                while (fx, fy) in region and (fx + dx, fy + dy) not in region:
+                    visited.add((fx, fy))
+                    fx += direction * dy
+                    fy += direction * dx
+
+    return side_count
+
+
 def main1():
     with open("input.txt", "r") as f:
         grid = [list(line.strip()) for line in f]
@@ -285,6 +310,20 @@ def main2():
     print(f"LOGF: { price = }")
 
 
+def main3():
+    with open("input.txt", "r") as f:
+        grid = [list(line.strip()) for line in f]
+
+    regions, _ = build_regions(grid)
+
+    price = 0
+    for region in regions:
+        for r in regions[region]:
+            price += count_sides(r) * len(r)
+    print(f"LOGF: { price = }")
+
+
 if __name__ == "__main__":
     main1()
-    main2()
+    # main2()
+    main3()
