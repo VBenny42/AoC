@@ -1,6 +1,5 @@
 from typing import List
 from re import search
-from functools import lru_cache
 
 
 def read_machine_info(lines: List[str]) -> dict:
@@ -40,16 +39,7 @@ def find_cheapest_combination(machine: dict):
         memo[(x, y)] = cost
         return cost
 
-    @lru_cache
-    def dp_cache(x, y):
-        if x < 0 or y < 0:
-            return float("inf")
-        if x == 0 and y == 0:
-            return 0
-        cost = min(a_cost + dp(x - a_x, y - a_y), b_cost + dp(x - b_x, y - b_y))
-        return cost
-
-    result = dp_cache(x, y)
+    result = dp(x, y)
     return result if result < float("inf") else None
 
 
@@ -57,13 +47,12 @@ def main1():
     with open("input.txt", "r") as f:
         lines = f.readlines()
     machines = [read_machine_info(lines[i : i + 3]) for i in range(0, len(lines), 4)]
-    # print(f"LOG: { machines = }")
     min_tokens = 0
     for machine in machines:
         cheapest_combination = find_cheapest_combination(machine)
         if cheapest_combination is not None:
             min_tokens += cheapest_combination
-    print(f"LOG: { min_tokens = }")
+    print(f"LOGF: { min_tokens = }")
 
 
 def main2():
