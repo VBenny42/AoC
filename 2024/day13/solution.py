@@ -20,9 +20,7 @@ def find_cheapest_combination(machine: dict):
     a_cost = 3
     b_cost = 1
 
-    # Find the cheapest combination of A and B to get to the prize location
-
-    x, y = machine["prize"]
+    p_x, p_y = machine["prize"]
     a_x, a_y = machine["A"]
     b_x, b_y = machine["B"]
 
@@ -39,8 +37,27 @@ def find_cheapest_combination(machine: dict):
         memo[(x, y)] = cost
         return cost
 
-    result = dp(x, y)
+    result = dp(p_x, p_y)
     return result if result < float("inf") else None
+
+
+def find_cheapest_combination2(machine: dict):
+    p_x, p_y = machine["prize"]
+    a_x, a_y = machine["A"]
+    b_x, b_y = machine["B"]
+
+    determinant = a_x * b_y - a_y * b_x
+    if determinant == 0:
+        return None  # No unique solution
+
+    a = (p_x * b_y - p_y * b_x) // determinant
+    b = (a_x * p_y - a_y * p_x) // determinant
+
+    # Validate the solution
+    if (a_x * a + b_x * b) != p_x or (a_y * a + b_y * b) != p_y:
+        return None
+
+    return 3 * a + b  # Return the cost
 
 
 def main1():
@@ -49,14 +66,27 @@ def main1():
     machines = [read_machine_info(lines[i : i + 3]) for i in range(0, len(lines), 4)]
     min_tokens = 0
     for machine in machines:
-        cheapest_combination = find_cheapest_combination(machine)
+        cheapest_combination = find_cheapest_combination2(machine)
         if cheapest_combination is not None:
             min_tokens += cheapest_combination
     print(f"LOGF: { min_tokens = }")
 
 
 def main2():
-    pass
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+    machines = [read_machine_info(lines[i : i + 3]) for i in range(0, len(lines), 4)]
+    addition = 10000000000000
+    min_tokens = 0
+    for machine in machines:
+        machine["prize"] = (
+            machine["prize"][0] + addition,
+            machine["prize"][1] + addition,
+        )
+        cheapest_combination = find_cheapest_combination2(machine)
+        if cheapest_combination is not None:
+            min_tokens += cheapest_combination
+    print(f"LOGF: { min_tokens = }")
 
 
 if __name__ == "__main__":
