@@ -1,17 +1,17 @@
-from typing import DefaultDict, Dict, Set, List
+from typing import DefaultDict, Set, List
 from itertools import chain
-from enum import Enum, auto
+from enum import Enum
 
 
 class Directions(Enum):
-    UP = auto()
-    RIGHT = auto()
-    DOWN = auto()
-    LEFT = auto()
-    UP_RIGHT = auto()
-    UP_LEFT = auto()
-    DOWN_RIGHT = auto()
-    DOWN_LEFT = auto()
+    UP = (0, -1)
+    RIGHT = (1, 0)
+    DOWN = (0, 1)
+    LEFT = (-1, 0)
+    UP_RIGHT = (1, -1)
+    UP_LEFT = (-1, -1)
+    DOWN_RIGHT = (1, 1)
+    DOWN_LEFT = (-1, 1)
 
 
 Coordinate = tuple[int, int]
@@ -32,35 +32,29 @@ def get_next_position(
         case Directions.UP:
             if position[1] == 0:
                 raise CoordinateError
-            next_position = (position[0], position[1] - 1)
         case Directions.LEFT:
             if position[0] == 0:
                 raise CoordinateError
-            next_position = (position[0] - 1, position[1])
         case Directions.DOWN:
             if position[1] == n - 1:
                 raise CoordinateError
-            next_position = (position[0], position[1] + 1)
         case Directions.RIGHT:
             if position[0] == m - 1:
                 raise CoordinateError
-            next_position = (position[0] + 1, position[1])
         case Directions.UP_LEFT:
             if position[1] == 0 or position[0] == 0:
                 raise CoordinateError
-            next_position = (position[0] - 1, position[1] - 1)
         case Directions.UP_RIGHT:
             if position[1] == 0 or position[0] == m - 1:
                 raise CoordinateError
-            next_position = (position[0] + 1, position[1] - 1)
         case Directions.DOWN_LEFT:
             if position[1] == n - 1 or position[0] == 0:
                 raise CoordinateError
-            next_position = (position[0] - 1, position[1] + 1)
         case Directions.DOWN_RIGHT:
             if position[1] == n - 1 or position[0] == m - 1:
                 raise CoordinateError
-            next_position = (position[0] + 1, position[1] + 1)
+    dx, dy = direction.value
+    next_position = (position[0] + dx, position[1] + dy)
     if (
         direction
         in {
@@ -111,17 +105,17 @@ def build_regions(
 def mark_perimeter(
     grid_with_adjacent_spaces: Grid, region: Set[Coordinate], grid: Grid
 ) -> None:
-    edges = {c: set() for c in region}
     for x, y in region:
         # Calculate corresponding coordinates in grid_with_adjacent_spaces
         adj_x, adj_y = 2 * x + 1, 2 * y + 1
         # Check all four directions
-        for direction, dx, dy, marker in [
-            (Directions.LEFT, -1, 0, "|"),
-            (Directions.RIGHT, 1, 0, "|"),
-            (Directions.UP, 0, -1, "-"),
-            (Directions.DOWN, 0, 1, "-"),
+        for direction, marker in [
+            (Directions.LEFT, "|"),
+            (Directions.RIGHT, "|"),
+            (Directions.UP, "-"),
+            (Directions.DOWN, "-"),
         ]:
+            dx, dy = direction.value
             nx, ny = x + dx, y + dy
             adj_nx, adj_ny = adj_x + dx, adj_y + dy
             # Check if the neighboring cell is out of bounds or not part of the region
@@ -133,7 +127,6 @@ def mark_perimeter(
                 or (nx, ny) not in region
             ):
                 grid_with_adjacent_spaces[adj_ny][adj_nx] = marker
-                edges[(x, y)].add(direction)
 
 
 def add_corners(grid_with_adjacent_spaces: Grid) -> None:
@@ -247,7 +240,13 @@ def calculate_corners(
 
 def count_sides(region: Set[Coordinate]) -> int:
     side_count = 0
-    for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+    for direction in (
+        Directions.UP,
+        Directions.RIGHT,
+        Directions.DOWN,
+        Directions.LEFT,
+    ):
+        dx, dy = direction.value
         visited = set()
         for plot in region:
             if plot in visited:
@@ -323,7 +322,22 @@ def main3():
     print(f"LOGF: { price = }")
 
 
+def main4():
+    with open("sample-input5.txt", "r") as f:
+        grid = [list(line.strip()) for line in f]
+
+    regions, _ = build_regions(grid)
+
+    g_a_s = make_adjacent_grid(grid)
+    for region in regions:
+        for r in regions[region]:
+            mark_perimeter(g_a_s, r, grid)
+    add_corners(g_a_s)
+    print_grid(g_a_s)
+
+
 if __name__ == "__main__":
     main1()
     # main2()
-    main3()
+    # main3()
+    main4()
