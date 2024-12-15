@@ -58,13 +58,17 @@ def print_map(map):
     print()
 
 
-def boxes_to_move(map: Map, box: Coordinate, direction: Directions) -> list[Coordinate]:
+def boxes_to_move(
+    map: Map, box: Coordinate, direction: Directions
+) -> list[Coordinate | bool]:
     x, y = box
     dx, dy = direction.value
     new_x, new_y = x + dx, y + dy
     # No need to check for further boxes if there is a wall or empty space
     # Return the current box
-    if map[new_y][new_x] == "#" or map[new_y][new_x] == ".":
+    if map[new_y][new_x] == "#":
+        return [False]
+    if map[new_y][new_x] == ".":
         return [box]
     if map[new_y][new_x] == "O":
         return boxes_to_move(map, (new_x, new_y), direction) + [box]
@@ -87,7 +91,10 @@ def move_robot(map: Map, robot: Coordinate, direction: Directions) -> Coordinate
     # Box is in new spot, check if box can be moved
     if map[new_y][new_x] == "O":
         boxes = boxes_to_move(map, (new_x, new_y), direction)
+        if any(box == False for box in boxes):
+            return robot
         for box in boxes:
+            assert type(box) == tuple
             box_x, box_y = box
             new_box_x, new_box_y = box_x + dx, box_y + dy
             # Furthest box can't be moved, return Early
