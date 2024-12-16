@@ -130,7 +130,7 @@ def move_robot(map: Map, robot: Coordinate, direction: Directions) -> Coordinate
 
 def boxes_to_move2(
     map: Map, box: Tuple[Coordinate, Coordinate], direction: Directions
-) -> list:
+) -> list[tuple[Coordinate, Coordinate]]:
     if direction == Directions.LEFT or direction == Directions.RIGHT:
         # same code as part 1
         x, y = box[0] if direction == Directions.LEFT else box[1]
@@ -221,6 +221,15 @@ def move_robot2(map: Map, robot: Coordinate, direction: Directions) -> Coordinat
             boxes = boxes_to_move2(map, box, direction)
         except EdgeError:
             return robot
+        match direction:
+            case Directions.UP:
+                boxes = sorted(boxes, key=lambda x: x[0][1])
+            case Directions.DOWN:
+                boxes = sorted(boxes, key=lambda x: x[0][1], reverse=True)
+            case Directions.LEFT:
+                boxes = sorted(boxes, key=lambda x: x[0][0])
+            case Directions.RIGHT:
+                boxes = sorted(boxes, key=lambda x: x[0][0], reverse=True)
         for box in boxes:
             box_l, box_r = box
             new_box_l, new_box_r = (
@@ -262,12 +271,12 @@ def calculate_gps_coordinate(box: Coordinate) -> int:
 def main1():
     with open("input.txt", "r") as f:
         lines = f.readlines()
+
     warehouse_map, movements = parse_input(lines)
-    # print_map(warehouse_map)
     robot = find_robot(warehouse_map)
+
     for movement in movements:
         robot = move_robot(warehouse_map, robot, movement)
-    # print_map(warehouse_map)
 
     boxes = find_boxes(warehouse_map)
     coordinates = sum(map(calculate_gps_coordinate, boxes))
@@ -277,9 +286,11 @@ def main1():
 def main2():
     with open("input.txt", "r") as f:
         lines = f.readlines()
+
     warehouse_map, movements = parse_input(lines)
     warehouse_map_scaled = scale_map(warehouse_map)
     robot = find_robot(warehouse_map_scaled)
+
     for movement in movements:
         robot = move_robot2(warehouse_map_scaled, robot, movement)
 
