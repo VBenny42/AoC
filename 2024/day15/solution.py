@@ -20,7 +20,7 @@ class Directions(Enum):
                 return ">"
 
 
-Map = List[List[str]]
+Grid = List[List[str]]
 Coordinate = tuple[int, int]
 
 
@@ -42,11 +42,11 @@ def parse_movement(movement: str) -> Directions:
             raise ValueError(f"Invalid movement: {movement}")
 
 
-def parse_input(lines: List[str]) -> tuple[Map, List[Directions]]:
+def parse_input(lines: List[str]) -> tuple[Grid, List[Directions]]:
     i = 0
-    warehouse_map = []
+    warehouse_grid = []
     while lines[i] != "\n":
-        warehouse_map.append(list(lines[i].strip()))
+        warehouse_grid.append(list(lines[i].strip()))
         i += 1
 
     movements = [
@@ -54,12 +54,12 @@ def parse_input(lines: List[str]) -> tuple[Map, List[Directions]]:
         for j in range(i + 1, len(lines))
         for movement in lines[j].strip()
     ]
-    return warehouse_map, movements
+    return warehouse_grid, movements
 
 
-def scale_map(map: Map) -> Map:
-    new_map = []
-    for row in map:
+def scale_grid(grid: Grid) -> Grid:
+    new_grid = []
+    for row in grid:
         new_row = []
         for spot in row:
             match spot:
@@ -71,154 +71,151 @@ def scale_map(map: Map) -> Map:
                     new_row.extend(["#", "#"])
                 case ".":
                     new_row.extend([".", "."])
-        new_map.append(new_row)
-    return new_map
+        new_grid.append(new_row)
+    return new_grid
 
 
-def print_map(map):
-    for row in map:
+def print_grid(grid):
+    for row in grid:
         print("".join(row))
     print()
 
 
-def boxes_to_move(map: Map, box: Coordinate, direction: Directions) -> list[Coordinate]:
+def boxes_to_move(
+    grid: Grid, box: Coordinate, direction: Directions
+) -> list[Coordinate]:
     x, y = box
     dx, dy = direction.value
     new_x, new_y = x + dx, y + dy
     # No need to check for further boxes if there is a wall or empty space
     # Return the current box
-    if map[new_y][new_x] == "#":
-        raise EdgeError("Edge of the map")
-    if map[new_y][new_x] == ".":
+    if grid[new_y][new_x] == "#":
+        raise EdgeError("Edge of the grid")
+    if grid[new_y][new_x] == ".":
         return [box]
-    if map[new_y][new_x] == "O":
-        return boxes_to_move(map, (new_x, new_y), direction) + [box]
+    if grid[new_y][new_x] == "O":
+        return boxes_to_move(grid, (new_x, new_y), direction) + [box]
     # Shouldn't reach here
     return []
 
 
-def move_robot(map: Map, robot: Coordinate, direction: Directions) -> Coordinate:
+def move_robot(grid: Grid, robot: Coordinate, direction: Directions) -> Coordinate:
     x, y = robot
     dx, dy = direction.value
     new_x, new_y = x + dx, y + dy
     # Can't move if there is a wall, return Early
-    if map[new_y][new_x] == "#":
+    if grid[new_y][new_x] == "#":
         return robot
-    # Can move freely, update the map
-    if map[new_y][new_x] == ".":
-        map[y][x] = "."
-        map[new_y][new_x] = "@"
+    # Can move freely, update the grid
+    if grid[new_y][new_x] == ".":
+        grid[y][x] = "."
+        grid[new_y][new_x] = "@"
         return (new_x, new_y)
     # Box is in new spot, check if box can be moved
-    if map[new_y][new_x] == "O":
+    if grid[new_y][new_x] == "O":
         try:
-            boxes = boxes_to_move(map, (new_x, new_y), direction)
+            boxes = boxes_to_move(grid, (new_x, new_y), direction)
         # Furthest box can't be moved, return Early
         except EdgeError:
             return robot
         for box in boxes:
             box_x, box_y = box
             new_box_x, new_box_y = box_x + dx, box_y + dy
-            map[box_y][box_x] = "."
-            map[new_box_y][new_box_x] = "O"
-        map[y][x] = "."
-        map[new_y][new_x] = "@"
+            grid[box_y][box_x] = "."
+            grid[new_box_y][new_box_x] = "O"
+        grid[y][x] = "."
+        grid[new_y][new_x] = "@"
         return (new_x, new_y)
     # Shouldn't reach here
     raise ValueError("Spot is invalid")
 
 
 def boxes_to_move2(
-    map: Map, box: Tuple[Coordinate, Coordinate], direction: Directions
+    grid: Grid, box: Tuple[Coordinate, Coordinate], direction: Directions
 ) -> list[tuple[Coordinate, Coordinate]]:
-    if direction == Directions.LEFT or direction == Directions.RIGHT:
+    dx, dy = direction.value
+    if direction in (Directions.LEFT, Directions.RIGHT):
         # same code as part 1
         x, y = box[0] if direction == Directions.LEFT else box[1]
         bracket = "]" if direction == Directions.LEFT else "["
-        dx, dy = direction.value
         new_x, new_y = x + dx, y + dy
         adjacent_box = (
             ((new_x - 1, new_y), (new_x, new_y))
             if direction == Directions.LEFT
             else ((new_x, new_y), (new_x + 1, new_y))
         )
-        if map[new_y][new_x] == "#":
-            raise EdgeError("Edge of the map")
-        if map[new_y][new_x] == ".":
+        if grid[new_y][new_x] == "#":
+            raise EdgeError("Edge of the grid")
+        if grid[new_y][new_x] == ".":
             return [box]
-        if map[new_y][new_x] == bracket:
-            return boxes_to_move2(map, adjacent_box, direction) + [box]
-    if direction == Directions.UP or direction == Directions.DOWN:
-        left, right = box
-        left_x, left_y = left
-        right_x, right_y = right
-        dx, dy = direction.value
-        new_left_x, new_left_y = left_x + dx, left_y + dy
-        new_right_x, new_right_y = right_x + dx, right_y + dy
+        if grid[new_y][new_x] == bracket:
+            return boxes_to_move2(grid, adjacent_box, direction) + [box]
+    if direction in (Directions.UP, Directions.DOWN):
+        new_left, new_right = (
+            (box[0][0] + dx, box[0][1] + dy),
+            (box[1][0] + dx, box[1][1] + dy),
+        )
 
-        if map[new_left_y][new_left_x] == "#" or map[new_right_y][new_right_x] == "#":
+        if (
+            grid[new_left[1]][new_left[0]] == "#"
+            or grid[new_right[1]][new_right[0]] == "#"
+        ):
             raise EdgeError("Wall")
 
-        if map[new_left_y][new_left_x] == "." and map[new_right_y][new_right_x] == ".":
+        if (
+            grid[new_left[1]][new_left[0]] == "."
+            and grid[new_right[1]][new_right[0]] == "."
+        ):
             return [box]
 
         # No need to check right bracket really
-        if map[new_left_y][new_left_x] == "[" and map[new_right_y][new_right_x] == "]":
+        if (
+            grid[new_left[1]][new_left[0]] == "["
+            and grid[new_right[1]][new_right[0]] == "]"
+        ):
             return boxes_to_move2(
-                map, ((new_left_x, new_left_y), (new_right_x, new_right_y)), direction
-            ) + [box]
-
-        if map[new_left_y][new_left_x] == "]" and map[new_right_y][new_right_x] == ".":
-            return boxes_to_move2(
-                map, ((new_left_x - 1, new_left_y), (new_left_x, new_left_y)), direction
-            ) + [box]
-        if map[new_right_y][new_right_x] == "[" and map[new_left_y][new_left_x] == ".":
-            return boxes_to_move2(
-                map,
-                ((new_right_x, new_right_y), (new_right_x + 1, new_right_y)),
+                grid,
+                ((new_left[0], new_left[1]), (new_right[0], new_right[1])),
                 direction,
             ) + [box]
-        else:
-            return (
-                boxes_to_move2(
-                    map,
-                    ((new_left_x - 1, new_left_y), (new_left_x, new_left_y)),
-                    direction,
-                )
-                + boxes_to_move2(
-                    map,
-                    (
-                        (new_right_x, new_right_y),
-                        (new_right_x + 1, new_right_y),
-                    ),
-                    direction,
-                )
-                + [box]
-            )
 
+        left_box, right_box = [], []
+        if grid[new_left[1]][new_left[0]] == "]":
+            left_box = boxes_to_move2(
+                grid,
+                ((new_left[0] - 1, new_left[1]), (new_left[0], new_left[1])),
+                direction,
+            )
+        if grid[new_right[1]][new_right[0]] == "[":
+            right_box = boxes_to_move2(
+                grid,
+                ((new_right[0], new_right[1]), (new_right[0] + 1, new_right[1])),
+                direction,
+            )
+        return left_box + right_box + [box]
     return []
 
 
-def move_robot2(map: Map, robot: Coordinate, direction: Directions) -> Coordinate:
+def move_robot2(grid: Grid, robot: Coordinate, direction: Directions) -> Coordinate:
     x, y = robot
     dx, dy = direction.value
     new_x, new_y = x + dx, y + dy
     # Can't move if there is a wall, return Early
-    if map[new_y][new_x] == "#":
+    if grid[new_y][new_x] == "#":
         return robot
-    # Can move freely, update the map
-    if map[new_y][new_x] == ".":
-        map[y][x] = "."
-        map[new_y][new_x] = "@"
+    # Can move freely, update the grid
+    if grid[new_y][new_x] == ".":
+        grid[y][x] = "."
+        grid[new_y][new_x] = "@"
         return (new_x, new_y)
     # Box is in new spot, check if box can be moved
-    if map[new_y][new_x] == "[" or map[new_y][new_x] == "]":
-        if map[new_y][new_x] == "[":
+    if grid[new_y][new_x] == "[" or grid[new_y][new_x] == "]":
+        if grid[new_y][new_x] == "[":
             box = ((new_x, new_y), (new_x + 1, new_y))
         else:
             box = ((new_x - 1, new_y), (new_x, new_y))
         try:
-            boxes = boxes_to_move2(map, box, direction)
+            boxes = boxes_to_move2(grid, box, direction)
         except EdgeError:
             return robot
         match direction:
@@ -236,31 +233,31 @@ def move_robot2(map: Map, robot: Coordinate, direction: Directions) -> Coordinat
                 (box_l[0] + dx, box_l[1] + dy),
                 (box_r[0] + dx, box_r[1] + dy),
             )
-            map[box_l[1]][box_l[0]] = "."
-            map[box_r[1]][box_r[0]] = "."
-            map[new_box_l[1]][new_box_l[0]] = "["
-            map[new_box_r[1]][new_box_r[0]] = "]"
-        map[y][x] = "."
-        map[new_y][new_x] = "@"
+            grid[box_l[1]][box_l[0]] = "."
+            grid[box_r[1]][box_r[0]] = "."
+            grid[new_box_l[1]][new_box_l[0]] = "["
+            grid[new_box_r[1]][new_box_r[0]] = "]"
+        grid[y][x] = "."
+        grid[new_y][new_x] = "@"
         return (new_x, new_y)
     # Shouldn't reach here
     raise ValueError("Spot is invalid")
 
 
-def find_robot(map: Map) -> Coordinate:
-    for y, row in enumerate(map):
+def find_robot(grid: Grid) -> Coordinate:
+    for y, row in enumerate(grid):
         for x, spot in enumerate(row):
             if spot == "@":
                 return (x, y)
     raise ValueError("Robot not found")
 
 
-def find_boxes(map: Map) -> list[Coordinate]:
+def find_boxes(grid: Grid) -> list[Coordinate]:
     return [
         (x, y)
-        for y, row in enumerate(map)
+        for y, row in enumerate(grid)
         for x, cell in enumerate(row)
-        if cell == "[" or cell == "O"
+        if cell in {"O", "["}
     ]
 
 
@@ -269,32 +266,32 @@ def calculate_gps_coordinate(box: Coordinate) -> int:
 
 
 def main1():
-    with open("input.txt", "r") as f:
+    with open("input.txt", "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    warehouse_map, movements = parse_input(lines)
-    robot = find_robot(warehouse_map)
+    warehouse_grid, movements = parse_input(lines)
+    robot = find_robot(warehouse_grid)
 
     for movement in movements:
-        robot = move_robot(warehouse_map, robot, movement)
+        robot = move_robot(warehouse_grid, robot, movement)
 
-    boxes = find_boxes(warehouse_map)
+    boxes = find_boxes(warehouse_grid)
     coordinates = sum(map(calculate_gps_coordinate, boxes))
     print(f"LOGF: { coordinates = }")
 
 
 def main2():
-    with open("input.txt", "r") as f:
+    with open("input.txt", "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    warehouse_map, movements = parse_input(lines)
-    warehouse_map_scaled = scale_map(warehouse_map)
-    robot = find_robot(warehouse_map_scaled)
+    warehouse_grid, movements = parse_input(lines)
+    warehouse_grid_scaled = scale_grid(warehouse_grid)
+    robot = find_robot(warehouse_grid_scaled)
 
     for movement in movements:
-        robot = move_robot2(warehouse_map_scaled, robot, movement)
+        robot = move_robot2(warehouse_grid_scaled, robot, movement)
 
-    boxes = find_boxes(warehouse_map_scaled)
+    boxes = find_boxes(warehouse_grid_scaled)
     coordinates = sum(map(calculate_gps_coordinate, boxes))
     print(f"LOGF: { coordinates = }")
 
