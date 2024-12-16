@@ -113,18 +113,14 @@ def move_robot(map: Map, robot: Coordinate, direction: Directions) -> Coordinate
     if map[new_y][new_x] == "O":
         try:
             boxes = boxes_to_move(map, (new_x, new_y), direction)
+        # Furthest box can't be moved, return Early
         except EdgeError:
             return robot
         for box in boxes:
-            assert type(box) == tuple
             box_x, box_y = box
             new_box_x, new_box_y = box_x + dx, box_y + dy
-            # Furthest box can't be moved, return Early
-            if map[new_box_y][new_box_x] == "#":
-                return robot
-            else:
-                map[box_y][box_x] = "."
-                map[new_box_y][new_box_x] = "O"
+            map[box_y][box_x] = "."
+            map[new_box_y][new_box_x] = "O"
         map[y][x] = "."
         map[new_y][new_x] = "@"
         return (new_x, new_y)
@@ -293,5 +289,5 @@ def main2():
 
 
 if __name__ == "__main__":
-    # main1()
+    main1()
     main2()
