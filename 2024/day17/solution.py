@@ -32,7 +32,7 @@ def bst(registers: Registers, operand: int):
     registers["B"] = value % 8
 
 
-def jnz(registers: Registers, operand: int):
+def jnz(registers: Registers, operand: int) -> int:
     if registers["A"] == 0:
         return -1
     return operand
@@ -42,7 +42,7 @@ def bxc(registers: Registers, _):
     registers["B"] = registers["B"] ^ registers["C"]
 
 
-def out(registers: Registers, operand: int):
+def out(registers: Registers, operand: int) -> int:
     value = get_combo_value(registers, operand)
     return value % 8
 
@@ -60,7 +60,7 @@ def cdv(registers: Registers, operand: int):
 
 
 def execute_instructions(registers: Registers, program: list[int]):
-    ip = 0
+    instruction_pointer = 0
     outs = []
     instructions = {
         0: adv,
@@ -72,25 +72,55 @@ def execute_instructions(registers: Registers, program: list[int]):
         6: bdv,
         7: cdv,
     }
-    while ip < len(program):
-        try:
-            instruction = program[ip]
-            operand = program[ip + 1]
-        except IndexError:
-            break
+
+    while instruction_pointer < len(program):
+        instruction = program[instruction_pointer]
+        operand = program[instruction_pointer + 1]
         instruction_fn = instructions[instruction]
+
         if instruction == 3:
             res = jnz(registers, operand)
             if res != -1:
-                ip = res
+                instruction_pointer = res
                 continue
-        else:
-            ret = instruction_fn(registers, operand)
-            if ret is not None:
-                outs.append(ret)
-        ip += 2
+
+        output = instruction_fn(registers, operand)
+        if instruction == 5:
+            outs.append(output)
+
+        instruction_pointer += 2
 
     return outs
+
+
+def find_quine(program: list[int], registers: Registers) -> int:
+    queue = [(len(program) - 1, 0)]
+
+    while queue:
+        # Want to find smallest quine value, so pop from the front
+        offset, value = queue.pop(0)
+        for i in range(8):
+            # Try all possible 3-bit values
+            new_value = (value << 3) + i
+
+            # Reset registers
+            registers["A"] = new_value
+            registers["B"] = 0
+            registers["C"] = 0
+
+            new_outs = execute_instructions(registers, program)
+
+            # Found value that produces a
+            # prefix of the original output
+            if new_outs == program[offset:]:
+                if offset == 0:
+                    # Found the quine value
+                    return new_value
+
+                # Compute the next bit of the quine
+                queue.append((offset - 1, new_value))
+
+    return -1
 
 
 def main1():
@@ -108,9 +138,19 @@ def main1():
 
 
 def main2():
-    pass
+    with open("input.txt", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        registers = {}
+        registers["A"] = int(lines[0].split(":")[1].strip())
+        registers["B"] = int(lines[1].split(":")[1].strip())
+        registers["C"] = int(lines[2].split(":")[1].strip())
+
+        program = list(map(int, lines[4].split(":")[1].strip().split(",")))
+
+    quine_value = find_quine(program, registers)
+    print(f"LOGF: { quine_value = }")
 
 
 if __name__ == "__main__":
     main1()
-    # main2()
+    main2()
