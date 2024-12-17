@@ -38,7 +38,7 @@ def jnz(registers: Registers, operand: int):
     return operand
 
 
-def bxc(registers: Registers, operand: int):
+def bxc(registers: Registers, _):
     registers["B"] = registers["B"] ^ registers["C"]
 
 
@@ -78,7 +78,6 @@ def execute_instructions(registers: Registers, program: list[int]):
             operand = program[ip + 1]
         except IndexError:
             break
-        print(f"LOG: { instruction = }, { operand = } { ip = }")
         instruction_fn = instructions[instruction]
         if instruction == 3:
             res = jnz(registers, operand)
@@ -89,8 +88,6 @@ def execute_instructions(registers: Registers, program: list[int]):
             ret = instruction_fn(registers, operand)
             if ret is not None:
                 outs.append(ret)
-        print(f"LOG: { registers = }")
-        print()
         ip += 2
 
     return outs
@@ -106,12 +103,8 @@ def main1():
 
         program = list(map(int, lines[4].split(":")[1].strip().split(",")))
 
-    print(f"LOG: { registers = }")
-    print(f"LOG: { program = }")
-
-    out = execute_instructions(registers, program)
-    print(f"LOG: { registers = }")
-    print(f"LOG: outs", ",".join(map(str, out)))
+    outs = execute_instructions(registers, program)
+    print("LOGF: outs", ",".join(map(str, outs)))
 
 
 def main2():
