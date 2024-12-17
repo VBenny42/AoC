@@ -88,7 +88,7 @@ def neighbors_fn(
         if direction == cell.direction:
             continue
         neighbors.append(State(cell.x, cell.y, direction))
-    match cell[2]:
+    match cell.direction:
         case Direction.UP:
             if cell.y > 0 and grid[cell.y - 1][cell.x] != "#":
                 neighbors.append(State(cell.x, cell.y - 1, cell[2]))
@@ -124,8 +124,8 @@ def main1():
 
     height, width = len(grid), len(grid[0])
 
-    start: State = State(0, 0, Direction.RIGHT)
-    ends = []
+    start: State | None = None
+    ends: list[State] | None = None
 
     for y, row in enumerate(grid):
         for x, cell in enumerate(row):
@@ -138,6 +138,9 @@ def main1():
                     State(x, y, Direction.DOWN),
                     State(x, y, Direction.LEFT),
                 ]
+
+    assert start is not None
+    assert ends is not None
 
     dijkstra = Dijkstra(
         lambda cell: neighbors_fn(cell, grid, width, height),
@@ -160,8 +163,8 @@ def main2():
 
     height, width = len(grid), len(grid[0])
 
-    start: State = State(0, 0, Direction.RIGHT)
-    ends = []
+    start: State | None = None
+    ends: list[State] | None = None
 
     for y, row in enumerate(grid):
         for x, cell in enumerate(row):
@@ -174,6 +177,9 @@ def main2():
                     State(x, y, Direction.DOWN),
                     State(x, y, Direction.LEFT),
                 ]
+
+    assert start is not None
+    assert ends is not None
 
     dijkstra = Dijkstra(
         lambda cell: neighbors_fn(cell, grid, width, height),
