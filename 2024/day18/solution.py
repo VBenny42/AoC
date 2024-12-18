@@ -1,19 +1,5 @@
-from enum import Enum, auto
 import heapq
 from collections.abc import Callable
-
-
-class Direction(Enum):
-    UP = auto()
-    RIGHT = auto()
-    DOWN = auto()
-    LEFT = auto()
-
-    def __hash__(self) -> int:
-        return hash(self.value)
-
-    def __lt__(self, other) -> bool:
-        return self.value < other.value
 
 
 Grid = list[list[str]]
@@ -75,7 +61,7 @@ class Dijkstra:
         return path
 
 
-def neighbors_fn(
+def adjacent_neighbors_fn(
     cell: Coordinate,
     grid: Grid,
     width: int,
@@ -93,7 +79,7 @@ def neighbors_fn(
     return neighbors
 
 
-def cost_fn(cell1: Coordinate, cell2: Coordinate) -> int:
+def neutral_cost_fn(cell1: Coordinate, cell2: Coordinate) -> int:
     return 1
 
 
@@ -122,8 +108,8 @@ def main1():
     end: Coordinate = (width - 1, height - 1)
 
     dijkstra = Dijkstra(
-        lambda cell: neighbors_fn(cell, grid, width, height),
-        cost_fn,
+        lambda cell: adjacent_neighbors_fn(cell, grid, width, height),
+        neutral_cost_fn,
         0.0,
         float("inf"),
     )
@@ -145,7 +131,8 @@ def main2():
 
     grid = [["." for _ in range(width)] for _ in range(height)]
 
-    for x, y in falling_bytes[:1024]:
+    # My value was near 2900
+    for x, y in falling_bytes[:2900]:
         grid[y][x] = "#"
 
     # print_grid(grid)
@@ -153,14 +140,14 @@ def main2():
     start: Coordinate = (0, 0)
     end: Coordinate = (width - 1, height - 1)
 
-    i = 1024
+    i = 2900
     while i < len(falling_bytes):
         falling_byte = falling_bytes[i]
         grid[falling_byte[1]][falling_byte[0]] = "#"
 
         dijkstra = Dijkstra(
-            lambda cell: neighbors_fn(cell, grid, width, height),
-            cost_fn,
+            lambda cell: adjacent_neighbors_fn(cell, grid, width, height),
+            neutral_cost_fn,
             0.0,
             float("inf"),
         )
@@ -170,6 +157,8 @@ def main2():
         min_cost = dijkstra.get_cost(end)
         if min_cost == float("inf"):
             break
+
+        i += 1
 
     print(f"LOGF: Byte that breaks the path { falling_bytes[i] }")
 
