@@ -1,7 +1,4 @@
-from collections.abc import Iterable
-
-
-def is_possible2(towels: Iterable[str], design: str) -> bool:
+def is_possible(towels: set[str], design: str) -> bool:
     n = len(design)
     dp = [False] * (n + 1)
     dp[0] = True
@@ -15,6 +12,19 @@ def is_possible2(towels: Iterable[str], design: str) -> bool:
     return dp[n]
 
 
+def different_combos(towels: set[str], design: str) -> int:
+    n = len(design)
+    dp = [0] * (n + 1)
+    dp[0] = 1
+
+    for i in range(1, n + 1):
+        for towel in towels:
+            if design.startswith(towel, i - len(towel)):
+                dp[i] += dp[i - len(towel)]
+
+    return dp[n]
+
+
 def main1():
     with open("input.txt", "r", encoding="utf-8") as f:
         part1, part2 = f.read().split("\n\n")
@@ -22,13 +32,23 @@ def main1():
 
         designs = part2.splitlines()
 
-    possible_designs = sum(is_possible2(towels, design) for design in designs)
+    possible_designs = sum(is_possible(towels, design) for design in designs)
 
     print(f"ANSWER: { possible_designs = }")
 
 
 def main2():
-    pass
+    with open("input.txt", "r", encoding="utf-8") as f:
+        part1, part2 = f.read().split("\n\n")
+        towels = set(part1.split(", "))
+
+        designs = part2.splitlines()
+
+    different_possible_designs = sum(
+        different_combos(towels, design) for design in designs
+    )
+
+    print(f"ANSWER: { different_possible_designs = }")
 
 
 if __name__ == "__main__":
