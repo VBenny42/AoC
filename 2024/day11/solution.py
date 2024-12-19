@@ -48,7 +48,7 @@ def main1():
         stones = list(map(int, f.read().split()))
     for _ in range(25):
         stones = blink(stones)
-    print(f"LOGF: { len(stones) = }")
+    print(f"ANSWER: { len(stones) = }")
 
 
 def main3():

@@ -134,7 +134,7 @@ def main1():
         program = list(map(int, lines[4].split(":")[1].strip().split(",")))
 
     outs = execute_instructions(registers, program)
-    print("LOGF: outs", ",".join(map(str, outs)))
+    print("ANSWER: outs", ",".join(map(str, outs)))
 
 
 def main2():
@@ -148,7 +148,7 @@ def main2():
         program = list(map(int, lines[4].split(":")[1].strip().split(",")))
 
     quine_value = find_quine(program, registers)
-    print(f"LOGF: { quine_value = }")
+    print(f"ANSWER: { quine_value = }")
 
 
 if __name__ == "__main__":

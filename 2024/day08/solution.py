@@ -59,7 +59,7 @@ def main1():
     antinodes = set()
     for frequency in frequencies:
         antinodes.update(find_antinodes_1(frequencies[frequency], grid))
-    print(f"LOGF: Number of unique antinodes within the map {len(antinodes)}")
+    print(f"ANSWER: Number of unique antinodes within the map {len(antinodes)}")
 
 
 def main2():
@@ -69,7 +69,7 @@ def main2():
     antinodes = set()
     for frequency in frequencies:
         antinodes.update(find_antinodes_2(frequencies[frequency], grid))
-    print(f"LOGF: Number of unique antinodes within the map {len(antinodes)}")
+    print(f"ANSWER: Number of unique antinodes within the map {len(antinodes)}")
 
 
 if __name__ == "__main__":

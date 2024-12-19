@@ -70,7 +70,7 @@ def get_next_position(
 
 
 def build_regions(
-    grid: Grid
+    grid: Grid,
 ) -> tuple[dict[str, list[set[Coordinate]]], list[list[set]]]:
     m, n = len(grid[0]), len(grid)
     regions = DefaultDict(list)
@@ -280,7 +280,7 @@ def main1():
         for r in regions[region]
     )
 
-    print(f"LOGF: { price = }")
+    print(f"ANSWER: { price = }")
 
 
 def make_adjacent_grid(grid: Grid) -> Grid:
@@ -306,7 +306,7 @@ def main2():
             mark_perimeter(g_a_s, r, grid)
             add_corners(g_a_s)
             price += calculate_corners(r, g_a_s, not_neighbors) * len(r)
-    print(f"LOGF: { price = }")
+    print(f"ANSWER: { price = }")
 
 
 def main3():
@@ -319,7 +319,7 @@ def main3():
     for region in regions:
         for r in regions[region]:
             price += count_sides(r) * len(r)
-    print(f"LOGF: { price = }")
+    print(f"ANSWER: { price = }")
 
 
 def main4():

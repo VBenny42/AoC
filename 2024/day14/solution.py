@@ -99,7 +99,7 @@ def main1():
         room_quadrant = get_quadrant(room, quadrant)
         num_robots = sum(sum(row) for row in room_quadrant)
         safety_factor *= num_robots
-    print(f"LOGF: { safety_factor = }")
+    print(f"ANSWER: { safety_factor = }")
 
 
 def main2():

@@ -68,7 +68,7 @@ def main1():
     for update in updates:
         if is_valid2(update, ruleset):
             sum += update[(len(update) - 1) // 2]
-    print(f"LOGF: {sum = }")
+    print(f"ANSWER: {sum = }")
 
 
 @timer_func
@@ -88,7 +88,7 @@ def main3():
     for update in updates:
         if is_valid2(update, ruleset):
             sum += update[(len(update) - 1) // 2]
-    print(f"LOGF: {sum = }")
+    print(f"ANSWER: {sum = }")
 
 
 @timer_func
@@ -109,7 +109,7 @@ def main2():
         if not is_valid2(update, ruleset):
             valid_reordering = reordering(update, ruleset)
             sum += valid_reordering[(len(valid_reordering) - 1) // 2]
-    print(f"LOGF: {sum = }")
+    print(f"ANSWER: {sum = }")
 
 
 if __name__ == "__main__":

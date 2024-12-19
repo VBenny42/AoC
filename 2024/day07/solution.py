@@ -99,7 +99,7 @@ def main1_forward():
         ]
 
     print(
-        f"LOGF: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul}))}"
+        f"ANSWER: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul}))}"
     )
 
 
@@ -113,7 +113,7 @@ def main1_backward():
         ]
 
     print(
-        f"LOGF: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation_p1(equation))}"
+        f"ANSWER: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation_p1(equation))}"
     )
 
 
@@ -127,7 +127,7 @@ def main2_forward():
         ]
 
     print(
-        f"LOGF: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul, concat_op}))}"
+        f"ANSWER: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul, concat_op}))}"
     )
 
 
@@ -141,7 +141,7 @@ def main2_backward():
         ]
 
     print(
-        f"LOGF: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation_p2(equation))}"
+        f"ANSWER: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation_p2(equation))}"
     )
 
 

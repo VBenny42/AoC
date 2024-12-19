@@ -118,7 +118,7 @@ def main1():
     dijkstra.find_path(start)
     min_cost = dijkstra.get_cost(end)
 
-    print(f"LOGF: Least cost path { int(min_cost) }")
+    print(f"ANSWER: Least cost path { int(min_cost) }")
 
 
 def main2():
@@ -161,7 +161,7 @@ def main2():
 
         i += 1
 
-    print(f"LOGF: Byte that breaks the path { falling_bytes[i] } at index { i }")
+    print(f"ANSWER: Byte that breaks the path { falling_bytes[i] } at index { i }")
 
 
 if __name__ == "__main__":

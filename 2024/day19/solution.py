@@ -24,7 +24,7 @@ def main1():
 
     possible_designs = sum(is_possible2(towels, design) for design in designs)
 
-    print(f"LOGF: { possible_designs = }")
+    print(f"ANSWER: { possible_designs = }")
 
 
 def main2():
