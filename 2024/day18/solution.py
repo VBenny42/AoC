@@ -132,7 +132,8 @@ def main2():
     grid = [["." for _ in range(width)] for _ in range(height)]
 
     # My value was near 2900
-    for x, y in falling_bytes[:2900]:
+    index = 2913
+    for x, y in falling_bytes[:index]:
         grid[y][x] = "#"
 
     # print_grid(grid)
@@ -140,7 +141,7 @@ def main2():
     start: Coordinate = (0, 0)
     end: Coordinate = (width - 1, height - 1)
 
-    i = 2900
+    i = index
     while i < len(falling_bytes):
         falling_byte = falling_bytes[i]
         grid[falling_byte[1]][falling_byte[0]] = "#"
@@ -160,7 +161,7 @@ def main2():
 
         i += 1
 
-    print(f"LOGF: Byte that breaks the path { falling_bytes[i] }")
+    print(f"LOGF: Byte that breaks the path { falling_bytes[i] } at index { i }")
 
 
 if __name__ == "__main__":
