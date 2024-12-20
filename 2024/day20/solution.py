@@ -28,14 +28,14 @@ def bfs(
     return float("inf"), []
 
 
-def find_cheats(grid, path):
+def find_cheats(grid: Grid, path: dict[Coord, int]):
     directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
     def in_bounds(x, y):
         return 0 <= y < len(grid) and 0 <= x < len(grid[0])
 
     cheats = []
-    for cell in path:
+    for cell in path.keys():
         x, y = cell
 
         for dx, dy in directions:
@@ -45,15 +45,15 @@ def find_cheats(grid, path):
                 if (
                     in_bounds(nx, ny)
                     and grid[ny][nx] == "."
-                    and path.index((nx, ny)) > path.index(cell)
+                    and path[(nx, ny)] > path[cell]
                 ):
                     cheats.append((cell, (nx, ny)))
 
     return cheats
 
 
-def calculate_savings(path: list[Coord], cheat: tuple[Coord, Coord]):
-    return path.index(cheat[1]) - path.index(cheat[0]) - 2
+def calculate_savings(path: dict[Coord, int], cheat: tuple[Coord, Coord]):
+    return path[cheat[1]] - path[cheat[0]] - 2
 
 
 def main1():
@@ -75,13 +75,13 @@ def main1():
 
     _, normal_path = bfs(grid, start, end)
 
-    cheats = find_cheats(grid, normal_path)
+    path = {cell: i for i, cell in enumerate(normal_path)}
+
+    cheats = find_cheats(grid, path)
 
     threshold = 100
 
-    savings = sum(
-        1 for cheat in cheats if calculate_savings(normal_path, cheat) >= threshold
-    )
+    savings = sum(1 for cheat in cheats if calculate_savings(path, cheat) >= threshold)
 
     print(f"ANSWER: { savings = }")
 
