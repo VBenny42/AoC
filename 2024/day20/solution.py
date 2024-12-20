@@ -57,16 +57,13 @@ def calculate_savings(path: dict[Coord, int], cheat: tuple[Coord, Coord]):
 def manhattan_neighbors(
     coord: Coord, grid_set: set[Coord], cheat_length: int
 ) -> set[Coord]:
-    def all_manhattan_neighbors(coord):
-        possible_neighbors = set()
-        x, y = coord
-        for dx in range(-cheat_length, cheat_length + 1):
-            dy = cheat_length - abs(dx)
-            possible_neighbors.add((x + dx, y + dy))
-            possible_neighbors.add((x + dx, y - dy))
-        return possible_neighbors
-
-    return all_manhattan_neighbors(coord).intersection(grid_set)
+    possible_neighbors = set()
+    x, y = coord
+    for dx in range(-cheat_length, cheat_length + 1):
+        dy = cheat_length - abs(dx)
+        possible_neighbors.add((x + dx, y + dy))
+        possible_neighbors.add((x + dx, y - dy))
+    return possible_neighbors.intersection(grid_set)
 
 
 def manhattan_distance(coord1: Coord, coord2: Coord) -> int:
