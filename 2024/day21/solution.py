@@ -207,28 +207,29 @@ NUMERIC_KEYPAD_TRANSITIONS = {
 
 
 @cache
-def shortest_sequence(level: int, sequence: str, num_robots: int):
+def shortest_sequence(level: int, sequence_str: str, num_robots: int):
     if level == num_robots + 1:
-        return len(sequence)
+        return len(sequence_str)
 
     transitions = (
         NUMERIC_KEYPAD_TRANSITIONS if level == 0 else DIRECTIONAL_KEYPAD_TRANSITIONS
     )
 
-    total = 0
+    sequence = 0
     # Always start at "A"
-    for start, end in zip("A" + sequence, sequence):
+    for current, target in zip("A" + sequence_str, sequence_str):
         # Must press "A" to enter sequence for next bot
         possible_paths = (
             shortest_sequence(level + 1, path + "A", num_robots)
-            for path in transitions[start][end]
+            for path in transitions[current][target]
         )
-        possible_paths = [path for path in possible_paths if path is not None]
         # If no possible paths, then start and end are the same,
         # so only one path is possible
-        total += min(possible_paths) if possible_paths else 1
+        sequence += min(
+            (path for path in possible_paths if path is not None), default=1
+        )
 
-    return total
+    return sequence
 
 
 def main1():
