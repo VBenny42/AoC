@@ -161,7 +161,7 @@ def main1():
         grid = [list(line.strip()) for line in f]
     starting_position = get_starting_position(grid)
     marked_grid = mark_guard_path(grid, starting_position)
-    print(f"LOG: distinct positions = {sum(row.count('X') for row in marked_grid)}")
+    print(f"ANSWER1: distinct positions = {sum(row.count('X') for row in marked_grid)}")
 
 
 @timer_func
@@ -170,7 +170,9 @@ def main2():
         grid = [list(line.strip()) for line in f]
     starting_position = get_starting_position(grid)
     marked_grid = mark_guard_path(grid, starting_position)
-    print(f"LOG: ways to induce a loop = {find_loops(marked_grid, starting_position)}")
+    print(
+        f"ANSWER2: ways to induce a loop = {find_loops(marked_grid, starting_position)}"
+    )
 
 
 @timer_func
@@ -180,7 +182,7 @@ def main3():
     starting_position = get_starting_position(grid)
     marked_grid = mark_guard_path(grid, starting_position)
     print(
-        f"LOG: ways to induce a loop = {find_loops_multiprocessing(marked_grid, starting_position)}"
+        f"ANSWER2: ways to induce a loop = {find_loops_multiprocessing(marked_grid, starting_position)}"
     )
 
 

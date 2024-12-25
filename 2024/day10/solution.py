@@ -104,7 +104,7 @@ def main1():
     ]
     for position in nine_positions:
         find_paths_to_zero_one(position, grid, trailheads, set())
-    print(f"LOG: score = { sum(trailheads.values()) }")
+    print(f"ANSWER1: score = { sum(trailheads.values()) }")
 
 
 def main2():
@@ -122,7 +122,7 @@ def main2():
     ]
     for position in nine_positions:
         find_paths_to_zero_all(position, grid, trailheads)
-    print(f"LOG: score = { sum(trailheads.values()) }")
+    print(f"ANSWER2: score = { sum(trailheads.values()) }")
 
 
 if __name__ == "__main__":

@@ -48,21 +48,21 @@ def main1():
         stones = list(map(int, f.read().split()))
     for _ in range(25):
         stones = blink(stones)
-    print(f"ANSWER: { len(stones) = }")
+    print(f"ANSWER1: { len(stones) = }")
 
 
 def main3():
     with open("input.txt", "r") as f:
         stones = list(map(int, f.read().split()))
     stones = blink_recursive(stones, 25)
-    print(f"LOG: { stones = }")
+    print(f"ANSWER1: { stones = }")
 
 
 def main2():
     with open("input.txt", "r") as f:
         stones = list(map(int, f.read().split()))
     stones = blink_recursive(stones, 75)
-    print(f"LOG: { stones = }")
+    print(f"ANSWER2: { stones = }")
 
 
 if __name__ == "__main__":

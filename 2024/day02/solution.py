@@ -43,7 +43,7 @@ def main1():
         converted_lines,
         0,
     )
-    print(f"LOG: {sum_of_valid_reports_part_1 = }")
+    print(f"ANSWER1: {sum_of_valid_reports_part_1 = }")
 
 
 def main2():
@@ -59,7 +59,7 @@ def main2():
         converted_lines,
         0,
     )
-    print(f"LOG: {sum_of_valid_reports_part_2 = }")
+    print(f"ANSWER2: {sum_of_valid_reports_part_2 = }")
 
 
 if __name__ == "__main__":
