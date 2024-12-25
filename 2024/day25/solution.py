@@ -1,6 +1,6 @@
 def parse_schematic(lines: list[str]) -> tuple[int, ...]:
     heights = [-1 for _ in range(5)]
-    for _, line in enumerate(lines):
+    for line in lines:
         for j, char in enumerate(line):
             if char == "#":
                 heights[j] += 1
