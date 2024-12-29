@@ -180,7 +180,7 @@ def main1():
     contiguous_diskmap = make_contiguous1(diskmap)
     files_only = takewhile(lambda x: x != FREE_SPACE, contiguous_diskmap)
     checksum = sum(i * id for i, id in enumerate(files_only))
-    print(f"ANSWER: {checksum = }")
+    print(f"ANSWER1: {checksum = }")
 
 
 def main2():
@@ -189,7 +189,7 @@ def main2():
         int_line = [int(x) for x in line]
     diskmap = convert_with_size(int_line)
     contiguous_diskmap = make_contiguous2(diskmap)
-    print(f"ANSWER: checksum for contiguous files {checksum(contiguous_diskmap)}")
+    print(f"ANSWER2: checksum for contiguous files {checksum(contiguous_diskmap)}")
 
 
 def main3():
@@ -201,7 +201,7 @@ def main3():
     checksum = sum(
         i * id for i, id in enumerate(contiguous_diskmap) if id != FREE_SPACE
     )
-    print(f"ANSWER: {checksum = }")
+    print(f"ANSWER2: {checksum = }")
 
 
 if __name__ == "__main__":

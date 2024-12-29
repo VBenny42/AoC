@@ -280,7 +280,7 @@ def main1():
         for r in regions[region]
     )
 
-    print(f"ANSWER: { price = }")
+    print(f"ANSWER1: { price = }")
 
 
 def make_adjacent_grid(grid: Grid) -> Grid:
@@ -319,7 +319,7 @@ def main3():
     for region in regions:
         for r in regions[region]:
             price += count_sides(r) * len(r)
-    print(f"ANSWER: { price = }")
+    print(f"ANSWER2: { price = }")
 
 
 def main4():

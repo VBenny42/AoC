@@ -69,7 +69,7 @@ def main1():
         cheapest_combination = find_cheapest_combination2(machine)
         if cheapest_combination is not None:
             min_tokens += cheapest_combination
-    print(f"ANSWER: { min_tokens = }")
+    print(f"ANSWER1: { min_tokens = }")
 
 
 def main2():
@@ -86,7 +86,7 @@ def main2():
         cheapest_combination = find_cheapest_combination2(machine)
         if cheapest_combination is not None:
             min_tokens += cheapest_combination
-    print(f"ANSWER: { min_tokens = }")
+    print(f"ANSWER2: { min_tokens = }")
 
 
 if __name__ == "__main__":

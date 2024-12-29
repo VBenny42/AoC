@@ -277,7 +277,7 @@ def main1():
 
     boxes = find_boxes(warehouse_grid)
     coordinates = sum(map(calculate_gps_coordinate, boxes))
-    print(f"ANSWER: { coordinates = }")
+    print(f"ANSWER1: { coordinates = }")
 
 
 def main2():
@@ -293,7 +293,7 @@ def main2():
 
     boxes = find_boxes(warehouse_grid_scaled)
     coordinates = sum(map(calculate_gps_coordinate, boxes))
-    print(f"ANSWER: { coordinates = }")
+    print(f"ANSWER2: { coordinates = }")
 
 
 if __name__ == "__main__":

@@ -34,7 +34,7 @@ def main1():
 
     possible_designs = sum(is_possible(towels, design) for design in designs)
 
-    print(f"ANSWER: { possible_designs = }")
+    print(f"ANSWER1: { possible_designs = }")
 
 
 def main2():
@@ -48,7 +48,7 @@ def main2():
         different_combos(towels, design) for design in designs
     )
 
-    print(f"ANSWER: { different_possible_designs = }")
+    print(f"ANSWER2: { different_possible_designs = }")
 
 
 if __name__ == "__main__":

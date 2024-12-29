@@ -117,7 +117,7 @@ def main2():
         # print_bitmap(room, rows, cols, f"pics/output_{i+1}.pbm")
         if i == 7752:
             # invert_room(room)
-            print_scaled_bitmap(room, rows, cols, f"output_{i+1}_scaled.pbm", 7)
+            print_scaled_bitmap(room, rows, cols, f"output_{i+1}_scaled.pbm", 1)
 
 
 if __name__ == "__main__":

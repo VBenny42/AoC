@@ -155,7 +155,7 @@ def print_grid(grid):
         print("".join(row))
 
 
-@timer_func
+# @timer_func
 def main1():
     with open("input.txt") as f:
         grid = [list(line.strip()) for line in f]
@@ -164,7 +164,7 @@ def main1():
     print(f"ANSWER1: distinct positions = {sum(row.count('X') for row in marked_grid)}")
 
 
-@timer_func
+# @timer_func
 def main2():
     with open("input.txt") as f:
         grid = [list(line.strip()) for line in f]
@@ -175,7 +175,7 @@ def main2():
     )
 
 
-@timer_func
+# @timer_func
 def main3():
     with open("input.txt") as f:
         grid = [list(line.strip()) for line in f]

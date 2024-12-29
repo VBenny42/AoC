@@ -154,7 +154,7 @@ def main1():
     for end in ends:
         min_cost = min(min_cost, dijkstra.get_cost(end))
 
-    print(f"ANSWER: Least cost path { int(min_cost) }")
+    print(f"ANSWER1: Least cost path { int(min_cost) }")
 
 
 def main2():
@@ -203,7 +203,7 @@ def main2():
     for node in dijkstra.get_paths(end_state):
         tiles_on_all_paths.add((node.x, node.y))
 
-    print(f"ANSWER: Tiles on all paths {len(tiles_on_all_paths)}")
+    print(f"ANSWER2: Tiles on all paths {len(tiles_on_all_paths)}")
 
 
 if __name__ == "__main__":

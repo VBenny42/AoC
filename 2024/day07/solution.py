@@ -99,11 +99,11 @@ def main1_forward():
         ]
 
     print(
-        f"ANSWER: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul}))}"
+        f"ANSWER1: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul}))}"
     )
 
 
-@timer_func
+# @timer_func
 def main1_backward():
     with open("input.txt", "r") as f:
         equations = [
@@ -113,7 +113,7 @@ def main1_backward():
         ]
 
     print(
-        f"ANSWER: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation_p1(equation))}"
+        f"ANSWER1: Sum of true equations: {sum(equation[0] for equation in equations if is_valid_equation_p1(equation))}"
     )
 
 
@@ -127,11 +127,11 @@ def main2_forward():
         ]
 
     print(
-        f"ANSWER: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul, concat_op}))}"
+        f"ANSWER2: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation(equation, {operator.add, operator.mul, concat_op}))}"
     )
 
 
-@timer_func
+# @timer_func
 def main2_backward():
     with open("input.txt", "r") as f:
         equations = [
@@ -141,12 +141,12 @@ def main2_backward():
         ]
 
     print(
-        f"ANSWER: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation_p2(equation))}"
+        f"ANSWER2: Sum of true equations with concat: {sum(equation[0] for equation in equations if is_valid_equation_p2(equation))}"
     )
 
 
 if __name__ == "__main__":
-    main1_forward()
+    # main1_forward()
     main1_backward()
-    main2_forward()
+    # main2_forward()
     main2_backward()
