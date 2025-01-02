@@ -51,7 +51,7 @@ def reordering(
     return tuple(sorted(update, key=cmp_to_key(compare_with_ruleset)))
 
 
-@timer_func
+# @timer_func
 def main1():
     with open("input-rules.txt", "r") as f:
         rules = (
@@ -68,10 +68,10 @@ def main1():
     for update in updates:
         if is_valid2(update, ruleset):
             sum += update[(len(update) - 1) // 2]
-    print(f"ANSWER: {sum = }")
+    print(f"ANSWER1: {sum = }")
 
 
-@timer_func
+# @timer_func
 def main3():
     with open("input-rules.txt", "r") as f:
         rules = (
@@ -88,10 +88,10 @@ def main3():
     for update in updates:
         if is_valid2(update, ruleset):
             sum += update[(len(update) - 1) // 2]
-    print(f"ANSWER: {sum = }")
+    print(f"ANSWER1: {sum = }")
 
 
-@timer_func
+# @timer_func
 def main2():
     with open("input-rules.txt", "r") as f:
         rules = (
@@ -109,10 +109,35 @@ def main2():
         if not is_valid2(update, ruleset):
             valid_reordering = reordering(update, ruleset)
             sum += valid_reordering[(len(valid_reordering) - 1) // 2]
-    print(f"ANSWER: {sum = }")
+    print(f"ANSWER2: {sum = }")
+
+
+def main4():
+    with open("input-rules.txt", "r") as f:
+        rules = (
+            [int(value) for value in line.strip().split("|")] for line in f.readlines()
+        )
+    with open("input-updates.txt", "r") as f:
+        updates = (
+            tuple(int(value) for value in line.strip().split(","))
+            for line in f.readlines()
+        )
+    ruleset = build_ruleset(rules)
+
+    sumCorrect = 0
+    sumReordered = 0
+    for update in updates:
+        reordered = reordering(update, ruleset)
+        if update == reordered:
+            sumCorrect += update[(len(update) - 1) // 2]
+        else:
+            sumReordered += reordered[(len(reordered) - 1) // 2]
+    print(f"ANSWER1: {sumCorrect = }")
+    print(f"ANSWER2: {sumReordered = }")
 
 
 if __name__ == "__main__":
-    main1()
-    main2()
-    main3()
+    # main1()
+    # main3()
+    # main2()
+    main4()
