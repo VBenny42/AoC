@@ -7,7 +7,7 @@ def main1():
         i2_lines = map(int, i2_lines)
 
     diff_sum = sum(abs(line1 - line2) for line1, line2 in zip(i1_lines, i2_lines))
-    print(diff_sum)
+    print("ANSWER1:", diff_sum)
 
 
 def main2():
@@ -25,7 +25,7 @@ def main2():
     similarity_sum = 0
     for key in i1_counter.keys():
         similarity_sum += (key * i1_counter[key]) * i2_counter.get(key, 0)
-    print(similarity_sum)
+    print("ANSWER2:", similarity_sum)
 
 
 if __name__ == "__main__":
