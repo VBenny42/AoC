@@ -79,10 +79,11 @@ def xmas_matches1(grid: list[list[str]]) -> int:
 
     for y in range(len(grid)):
         for x in range(len(grid[y])):
-            for direction in Directions:
-                matches += (
-                    1 if is_xmas_match(grid, Coordinate(x, y), "", direction) else 0
-                )
+            if grid[y][x] == "X":
+                for direction in Directions:
+                    matches += (
+                        1 if is_xmas_match(grid, Coordinate(x, y), "", direction) else 0
+                    )
     return matches
 
 
@@ -122,14 +123,14 @@ def main1():
     with open("input.txt") as f:
         lines = f.readlines()
     grid = [list(line.strip()) for line in lines]
-    print(xmas_matches1(grid))
+    print("ANSWER1: xmas matches", xmas_matches1(grid))
 
 
 def main2():
     with open("input.txt") as f:
         lines = f.readlines()
     grid = [list(line.strip()) for line in lines]
-    print(xmas_matches2(grid))
+    print("ANSWER2: x-mas matches", xmas_matches2(grid))
 
 
 if __name__ == "__main__":
