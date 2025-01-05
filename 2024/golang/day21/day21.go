@@ -81,15 +81,15 @@ func (d *day21) getShortestSequenceLength(numRobots int) int {
 	return totalShortestSequence
 }
 
-func (d *day21) part1() {
-	fmt.Println("ANSWER1: 2 robots shortestSequenceLength:", d.getShortestSequenceLength(2))
+func (d *day21) Part1() int {
+	return d.getShortestSequenceLength(2)
 }
 
-func (d *day21) part2() {
-	fmt.Println("ANSWER2: 25 robots shortestSequenceLength:", d.getShortestSequenceLength(25))
+func (d *day21) Part2() int {
+	return d.getShortestSequenceLength(25)
 }
 
-func parse(filename string) *day21 {
+func Parse(filename string) *day21 {
 	data := utils.SplitLines(filename)
 
 	codes := make([]line, len(data))
@@ -108,7 +108,7 @@ func parse(filename string) *day21 {
 }
 
 func Solve(filename string) {
-	d := parse(filename)
-	d.part1()
-	d.part2()
+	d := Parse(filename)
+	fmt.Println("ANSWER1: 2 robots shortestSequenceLength:", d.Part1())
+	fmt.Println("ANSWER2: 25 robots shortestSequenceLength:", d.Part2())
 }

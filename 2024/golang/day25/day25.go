@@ -27,7 +27,7 @@ func parseSchematic(lines []string) schematic {
 	return heights
 }
 
-func (d *day25) part1() {
+func (d *day25) Part1() int {
 	doesNotOverlap := func(lock, key schematic) bool {
 		for i := range lock {
 			if lock[i]+key[i] > 5 {
@@ -47,10 +47,10 @@ func (d *day25) part1() {
 		}
 	}
 
-	fmt.Println("ANSWER: fits:", fits)
+	return fits
 }
 
-func parse(filename string) *day25 {
+func Parse(filename string) *day25 {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		fmt.Println("Error reading file")
@@ -74,5 +74,5 @@ func parse(filename string) *day25 {
 }
 
 func Solve(filename string) {
-	parse(filename).part1()
+	fmt.Println("ANSWER: fits:", Parse(filename).Part1())
 }

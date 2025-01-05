@@ -51,7 +51,7 @@ func getBananaSequences(prices []int, changes []int) map[sequence]int {
 	return sequences
 }
 
-func (d *day22) part1and2Channels() {
+func (d *day22) Part1and2() (int, int) {
 	wg := &sync.WaitGroup{}
 	seqChan := make(chan map[sequence]int, len(d.seeds))
 	secretChan := make(chan int, len(d.seeds))
@@ -94,11 +94,10 @@ func (d *day22) part1and2Channels() {
 		}
 	}
 
-	fmt.Println("ANSWER1: sumSecretNumbers:", sumSecretNumbers)
-	fmt.Println("ANSWER2: maxSequence:", maxSequence)
+	return sumSecretNumbers, maxSequence
 }
 
-func parse(filename string) *day22 {
+func Parse(filename string) *day22 {
 	data := utils.SplitLines(filename)
 	seeds := make([]int, len(data))
 
@@ -110,6 +109,8 @@ func parse(filename string) *day22 {
 }
 
 func Solve(filename string) {
-	d := parse(filename)
-	d.part1and2Channels()
+	d := Parse(filename)
+	sumSecretNumbers, maxSequence := d.Part1and2()
+	fmt.Println("ANSWER1: sumSecretNumbers:", sumSecretNumbers)
+	fmt.Println("ANSWER2: maxSequence:", maxSequence)
 }

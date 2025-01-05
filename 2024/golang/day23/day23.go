@@ -16,7 +16,7 @@ type day23 struct {
 	reverseComputers map[int]string
 }
 
-func parse(filename string) *day23 {
+func Parse(filename string) *day23 {
 	data := utils.SplitLines(filename)
 
 	computers := make(map[string]int)
@@ -55,7 +55,7 @@ func parse(filename string) *day23 {
 	return &day23{g, reverseComputers}
 }
 
-func (d *day23) part1and2() {
+func (d *day23) Part1and2() (int, string) {
 	cliqueChannel := make(chan []int)
 
 	go graph.AllMaximalCliques(d.graph, cliqueChannel)
@@ -122,10 +122,11 @@ func (d *day23) part1and2() {
 
 	sort.Strings(maxCliqueComputers)
 
-	fmt.Println("ANSWER1: threeCliques:", threeCliques)
-	fmt.Println("ANSWER2: maxCliqueComputers:", strings.Join(maxCliqueComputers, ","))
+	return threeCliques, strings.Join(maxCliqueComputers, ",")
 }
 
 func Solve(filename string) {
-	parse(filename).part1and2()
+	threeCliques, maxCliqueComputers := Parse(filename).Part1and2()
+	fmt.Println("ANSWER1: threeCliques:", threeCliques)
+	fmt.Println("ANSWER2: maxCliqueComputers:", maxCliqueComputers)
 }

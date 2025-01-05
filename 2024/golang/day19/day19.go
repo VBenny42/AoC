@@ -33,7 +33,7 @@ func (d *day19) differentCombos(design string) int {
 	return count
 }
 
-func (d *day19) part1and2() {
+func (d *day19) Part1and2() (int, int) {
 	possibleDesigns := 0
 	allCombos := 0
 
@@ -45,11 +45,10 @@ func (d *day19) part1and2() {
 		allCombos += combos
 	}
 
-	fmt.Println("ANSWER1: possibleDesigns:", possibleDesigns)
-	fmt.Println("ANSWER2: allCombos:", allCombos)
+	return possibleDesigns, allCombos
 }
 
-func parse(filename string) *day19 {
+func Parse(filename string) *day19 {
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("File reading error", err)
@@ -74,5 +73,7 @@ func parse(filename string) *day19 {
 }
 
 func Solve(filename string) {
-	parse(filename).part1and2()
+	possibleDesigns, allCombos := Parse(filename).Part1and2()
+	fmt.Println("ANSWER1: possibleDesigns:", possibleDesigns)
+	fmt.Println("ANSWER2: allCombos:", allCombos)
 }

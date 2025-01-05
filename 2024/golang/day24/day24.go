@@ -119,7 +119,7 @@ func getSwaps(gates []gate) []string {
 	return swaps
 }
 
-func (d *day24) part1() {
+func (d *day24) Part1() int64 {
 	gates := d.gates
 
 	for len(gates) > 0 {
@@ -151,16 +151,16 @@ func (d *day24) part1() {
 		log.Fatalf("Error converting binary string to int: %v", err)
 	}
 
-	fmt.Println("ANSWER1: zBinaryInt:", zBinaryInt)
+	return zBinaryInt
 }
 
-func (d *day24) part2() {
+func (d *day24) Part2() string {
 	swaps := getSwaps(d.gates)
 	sort.Sort(sort.StringSlice(swaps))
-	fmt.Println("ANSWER2: swaps:", strings.Join(swaps, ","))
+	return strings.Join(swaps, ",")
 }
 
-func parse(filename string) *day24 {
+func Parse(filename string) *day24 {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		fmt.Println("File reading error", err)
@@ -195,7 +195,7 @@ func parse(filename string) *day24 {
 }
 
 func Solve(filename string) {
-	d := parse(filename)
-	d.part1()
-	d.part2()
+	d := Parse(filename)
+	fmt.Println("ANSWER1: zBinaryInt:", d.Part1())
+	fmt.Println("ANSWER2: swaps:", d.Part2())
 }

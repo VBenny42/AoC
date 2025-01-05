@@ -13,6 +13,7 @@ type (
 
 type day20 struct {
 	grid
+	threshold int
 }
 
 func isValid(g grid, c coord) bool {
@@ -82,13 +83,13 @@ func manhattanDistance(c1, c2 coord) int {
 	return utils.Abs(c1.x-c2.x) + utils.Abs(c1.y-c2.y)
 }
 
-func (d *day20) part1and2() {
+func (d *day20) Part1and2() (int, int) {
 	start := getCoord(d.grid, 'S')
 	end := getCoord(d.grid, 'E')
 
 	path := bfs(d.grid, start, end)
 
-	threshold := 100
+	threshold := d.threshold
 
 	twoCheats, twentyCheats := 0, 0
 	for i := 0; i < len(path)-threshold; i++ {
@@ -102,11 +103,10 @@ func (d *day20) part1and2() {
 			}
 		}
 	}
-	fmt.Println("ANSWER1: twoCheats:", twoCheats)
-	fmt.Println("ANSWER2: twentyCheats:", twentyCheats)
+	return twoCheats, twentyCheats
 }
 
-func parse(filename string) *day20 {
+func Parse(filename string, threshold int) *day20 {
 	data := utils.SplitLines(filename)
 
 	var grid grid
@@ -115,9 +115,11 @@ func parse(filename string) *day20 {
 		grid = append(grid, []rune(line))
 	}
 
-	return &day20{grid}
+	return &day20{grid, threshold}
 }
 
 func Solve(filename string) {
-	parse(filename).part1and2()
+	twoCheats, twentyCheats := Parse(filename, 100).Part1and2()
+	fmt.Println("ANSWER1: twoCheats:", twoCheats)
+	fmt.Println("ANSWER2: twentyCheats:", twentyCheats)
 }
