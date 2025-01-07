@@ -21,7 +21,7 @@ func (d *day01) Part2() int {
 }
 
 func Parse(filename string) *day01 {
-	data := utils.SplitLines(filename)
+	data := utils.ReadLines(filename)
 
 	calories := make([]int, 0)
 

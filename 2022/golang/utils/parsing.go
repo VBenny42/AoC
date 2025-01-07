@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func SplitLines(filename string) []string {
+func ReadLines(filename string) []string {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -16,7 +16,7 @@ func SplitLines(filename string) []string {
 	return strings.Split(lines, "\n")
 }
 
-func JoinFile(filename string) string {
+func ReadTrimmed(filename string) string {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
