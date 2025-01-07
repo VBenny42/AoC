@@ -2,9 +2,10 @@ package day05
 
 import (
 	"fmt"
-	"os"
 	"slices"
 	"strings"
+
+	"github.com/VBenny42/AoC/2022/golang/utils"
 )
 
 type instruction struct {
@@ -24,12 +25,7 @@ func parseCrates(line string, numStacks int) []rune {
 	crates := make([]rune, numStacks)
 
 	for i := 0; i < len(line); i += step {
-		end := i + step
-		if end > len(line) {
-			end = len(line)
-		}
-
-		if i+1 < len(line) && line[i+1] != ' ' {
+		if line[i+1] != ' ' {
 			crates[i/step] = rune(line[i+1])
 		}
 	}
@@ -87,12 +83,7 @@ func (d *day05) Part2() string {
 }
 
 func Parse(filename string) *day05 {
-	file, err := os.ReadFile(filename)
-	if err != nil {
-		panic(err)
-	}
-
-	lines := strings.Split(strings.Trim(string(file), "\n"), "\n")
+	lines := utils.ReadLines(filename)
 
 	stackIndex := 0
 
@@ -106,7 +97,7 @@ func Parse(filename string) *day05 {
 	numStacks := len(strings.Fields(lines[stackIndex]))
 	stacks := make([][]rune, numStacks)
 
-	for i := 0; i < stackIndex; i++ {
+	for i := range stackIndex {
 		crates := parseCrates(lines[i], numStacks)
 		for j, crate := range crates {
 			if crate == rune(0) {
