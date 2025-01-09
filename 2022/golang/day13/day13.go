@@ -2,7 +2,7 @@ package day13
 
 import (
 	"fmt"
-	// "sort"
+	"sort"
 	"strconv"
 
 	"github.com/VBenny42/AoC/2022/golang/utils"
@@ -13,12 +13,8 @@ type packet struct {
 	children []packet
 }
 
-type pair struct {
-	left, right packet
-}
-
 type day13 struct {
-	pairs []pair
+	packets []packet
 }
 
 func (packet packet) String() string {
@@ -35,10 +31,6 @@ func (packet packet) String() string {
 	}
 	result += "]"
 	return result
-}
-
-func (pair pair) String() string {
-	return fmt.Sprintf("{%s, %s}", pair.left, pair.right)
 }
 
 func parsePacket(s string) packet {
@@ -140,51 +132,55 @@ func comparePair(left, right packet) (bool, error) {
 func (d *day13) Part1() int {
 	sum := 0
 
-	for i, pair := range d.pairs {
-		if result, err := comparePair(pair.left, pair.right); err == nil && result {
-			sum += i + 1
+	for i := 0; i < len(d.packets); i += 2 {
+		if result, err := comparePair(d.packets[i], d.packets[i+1]); err == nil && result {
+			sum += (i / 2) + 1
 		}
 	}
 
 	return sum
 }
 
-// func (d *day13) Part2() int {
-// 	d.pairs = append(d.pairs, )
-// 	sort.Slice(d.pairs, func(i, j int) bool {
-// 		result, err := comparePair(d.pairs[i].left, d.pairs[j].left)
-// 		if err != nil {
-// 			return false
-// 		}
-// 		return result
-// 	})
-//
-// 	return 0
-// }
+func (d *day13) Part2() int {
+	d.packets = append(d.packets, parsePacket("[[2]]"), parsePacket("[[6]]"))
+
+	sort.Slice(d.packets, func(i, j int) bool {
+		return utils.Must(comparePair(d.packets[i], d.packets[j]))
+	})
+
+	dividerTwoIndex, dividerSixIndex := -1, -1
+
+	for i, packet := range d.packets {
+		if packet.value == nil &&
+			len(packet.children) == 1 &&
+			len(packet.children[0].children) == 1 &&
+			packet.children[0].children[0].value != nil {
+			if *packet.children[0].children[0].value == 2 {
+				dividerTwoIndex = i + 1
+			} else if *packet.children[0].children[0].value == 6 {
+				dividerSixIndex = i + 1
+			}
+		}
+	}
+
+	return dividerTwoIndex * dividerSixIndex
+}
 
 func Parse(filename string) *day13 {
 	data := utils.ReadLines(filename)
 
-	pairs := make([]pair, 0)
-
-	var pair pair
+	packets := make([]packet, 0)
 
 	for i := 0; i < len(data); i += 3 {
-		if i >= len(data) {
-			break
-		}
-
-		pair.left = parsePacket(data[i])
-		pair.right = parsePacket(data[i+1])
-
-		pairs = append(pairs, pair)
+		packets = append(packets, parsePacket(data[i]), parsePacket(data[i+1]))
 	}
 
-	return &day13{pairs}
+	return &day13{packets}
 }
 
 func Solve(filename string) {
 	day := Parse(filename)
 
 	fmt.Println("ANSWER1: pairs in the right order:", day.Part1())
+	fmt.Println("ANSWER2: divider index product:", day.Part2())
 }
