@@ -41,7 +41,7 @@ func (g *grid) at(c utils.Coord) rune {
 	return (*g)[c.Y][c.X]
 }
 
-func (g *grid) printBitmap(filename string) {
+func (g *grid) makeBitmap(filename string) {
 	file, err := os.Create(filename)
 	if err != nil {
 		panic(err)
@@ -52,16 +52,17 @@ func (g *grid) printBitmap(filename string) {
 	line := strings.Builder{}
 	line.WriteString(fmt.Sprintf("P2\n%d %d\n15\n", len(grid[0]), len(grid)))
 
-	mapping := map[rune]int{
-		'.': 0,
-		'#': 15,
-		'o': 7,
-		'+': 10,
+	mapping := map[rune]string{
+		'.': "0",
+		'#': "15",
+		'o': "7",
+		'+': "10",
 	}
 
 	for _, row := range *g {
 		for _, cell := range row {
-			line.WriteString(fmt.Sprintf("%d ", mapping[cell]))
+			line.WriteString(mapping[cell])
+			line.WriteString(" ")
 		}
 		line.WriteString("\n")
 	}
@@ -73,60 +74,43 @@ func (g *grid) printBitmap(filename string) {
 }
 
 func (d *Day14) fall(grain utils.Coord) error {
-	// Check if starting position is blocked
-	if d.Grid.at(grain) == '#' || d.Grid.at(grain) == 'o' {
-		return fmt.Errorf("Obstacle")
-	}
+	for {
+		if d.Grid.at(grain) == '#' || d.Grid.at(grain) == 'o' {
+			return fmt.Errorf("Obstacle")
+		}
 
-	// Try to move down
-	next := grain.Add(utils.Down)
-	if !d.inBounds(next) {
-		return fmt.Errorf("Reached bottom")
-	}
-	if d.Grid.at(next) == '.' {
-		err := d.fall(next)
-		if err == nil {
-			return nil // Sand was placed successfully below
+		next := grain.Add(utils.Down)
+		if !d.inBounds(next) {
+			return fmt.Errorf("Reached bottom")
 		}
-		if err.Error() == "Reached bottom" {
-			return err
-		}
-		// Otherwise try left/right
-	}
 
-	// Hit obstacle, check left
-	left := next.Add(utils.Left)
-	if !d.inBounds(left) {
-		return fmt.Errorf("Reached bottom")
-	}
-	if d.Grid.at(left) == '.' {
-		err := d.fall(left)
-		if err == nil {
-			return nil // Sand was placed successfully to the left
-		}
-		if err.Error() == "Reached bottom" {
-			return err
-		}
-	}
+		if d.Grid.at(next) != '.' {
+			left := next.Add(utils.Left)
+			right := next.Add(utils.Right)
 
-	// Check right
-	right := next.Add(utils.Right)
-	if !d.inBounds(right) {
-		return fmt.Errorf("Reached bottom")
-	}
-	if d.Grid.at(right) == '.' {
-		err := d.fall(right)
-		if err == nil {
-			return nil // Sand was placed successfully to the right
-		}
-		if err.Error() == "Reached bottom" {
-			return err
-		}
-	}
+			// check if we'll come to rest immediately
+			if !d.inBounds(left) || !d.inBounds(right) ||
+				(d.Grid.at(left) != '.' && d.Grid.at(right) != '.') {
+				d.Grid[grain.Y][grain.X] = 'o'
+				return nil
+			}
 
-	// Can't move down, left, or right - come to rest
-	d.Grid[grain.Y][grain.X] = 'o'
-	return nil
+			// try left
+			if d.inBounds(left) && d.Grid.at(left) == '.' {
+				grain = left
+				continue
+			}
+
+			// try right
+			if d.inBounds(right) && d.Grid.at(right) == '.' {
+				grain = right
+				continue
+			}
+		}
+
+		// move down
+		grain = next
+	}
 }
 
 func (d *Day14) fillGrid() int {
@@ -165,8 +149,14 @@ func ParseLine(line string) ([]Line, int) {
 	for i := 0; i < len(matches)-1; i++ {
 		start, end := matches[i], matches[i+1]
 		lines[i] = Line{
-			Start: utils.Coord{X: utils.Must(strconv.Atoi(start[1])), Y: utils.Must(strconv.Atoi(start[2]))},
-			End:   utils.Coord{X: utils.Must(strconv.Atoi(end[1])), Y: utils.Must(strconv.Atoi(end[2]))},
+			Start: utils.Coord{
+				X: utils.Must(strconv.Atoi(start[1])),
+				Y: utils.Must(strconv.Atoi(start[2])),
+			},
+			End: utils.Coord{
+				X: utils.Must(strconv.Atoi(end[1])),
+				Y: utils.Must(strconv.Atoi(end[2])),
+			},
 		}
 		maxY = max(maxY, lines[i].Start.Y, lines[i].End.Y)
 	}
@@ -256,4 +246,5 @@ func Solve(filename string) {
 
 	fmt.Println("ANSWER1: number of grains before infinite fall:", part1)
 	fmt.Println("ANSWER2: number of grains that will fall in total:", part2)
+	// d.Grid.printBitmap("day14.pgm")
 }
