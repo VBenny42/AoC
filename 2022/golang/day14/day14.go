@@ -3,7 +3,6 @@ package day14
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -138,24 +137,27 @@ func (d *Day14) Part1And2() (int, int) {
 }
 
 func ParseLine(line string) ([]Line, int) {
-	pattern := `(\d+),(\d+)`
-	re := regexp.MustCompile(pattern)
+	matches := strings.FieldsFunc(line, func(r rune) bool {
+		return r == ' ' || r == '-' || r == '>'
+	})
 
-	matches := re.FindAllStringSubmatch(line, -1)
+	matchesSplit := make([][]string, len(matches))
+	for i := range matches {
+		matchesSplit[i] = strings.Split(matches[i], ",")
+	}
 
 	lines := make([]Line, len(matches)-1)
 	maxY := 0
-
-	for i := 0; i < len(matches)-1; i++ {
-		start, end := matches[i], matches[i+1]
+	for i := range lines {
+		start, end := matchesSplit[i], matchesSplit[i+1]
 		lines[i] = Line{
 			Start: utils.Coord{
-				X: utils.Must(strconv.Atoi(start[1])),
-				Y: utils.Must(strconv.Atoi(start[2])),
+				X: utils.Must(strconv.Atoi(start[0])),
+				Y: utils.Must(strconv.Atoi(start[1])),
 			},
 			End: utils.Coord{
-				X: utils.Must(strconv.Atoi(end[1])),
-				Y: utils.Must(strconv.Atoi(end[2])),
+				X: utils.Must(strconv.Atoi(end[0])),
+				Y: utils.Must(strconv.Atoi(end[1])),
 			},
 		}
 		maxY = max(maxY, lines[i].Start.Y, lines[i].End.Y)
@@ -192,7 +194,7 @@ func Parse(filename string) *Day14 {
 		}
 	}
 
-	// rocks will form a triangle, with point being sand source
+	// rocks will form a triangle, with top point being sand source
 	// the width of the triangle will be 2*maxY + 1
 	// therefore, the leftmost rock will be at 500 - maxY
 	// no sand can be placed to the left of this point
@@ -227,7 +229,7 @@ func Parse(filename string) *Day14 {
 	}
 
 	// Mark the sand source
-	sourceX := 500 - minX
+	sourceX := maxY
 	grid[0][sourceX] = '+'
 
 	return &Day14{

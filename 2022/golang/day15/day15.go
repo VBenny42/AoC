@@ -2,6 +2,7 @@ package day15
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/VBenny42/AoC/2022/golang/utils"
 )
@@ -11,69 +12,82 @@ type pair struct {
 	beacon utils.Coord
 }
 
-type grid [][]rune
-
 type day15 struct {
 	pairs      []pair
 	rowToCheck int
-	grid       grid
 }
 
-func (g grid) String() string {
-	str := "\n"
-	for _, row := range g {
-		str += string(row) + "\n"
-	}
-	return str
+type kleePoint struct {
+	x     int
+	isEnd bool
+}
+
+type span struct {
+	start int
+	end   int
 }
 
 func manhattanDistance(a, b utils.Coord) int {
 	return utils.Abs(a.X-b.X) + utils.Abs(a.Y-b.Y)
 }
 
-func (g *grid) manhattanNeighbours(p utils.Coord, dist int) []utils.Coord {
-	neighbours := make([]utils.Coord, 0)
-	width := len((*g)[0])
-	height := len(*g)
+func (p *pair) manhattanSpan(row int) (span, bool) {
+	radius := manhattanDistance(p.sensor, p.beacon)
 
-	for dx := -dist; dx <= dist; dx++ {
-		maxDY := dist - utils.Abs(dx) // This is correct from your original code
-		for dy := -maxDY; dy <= maxDY; dy++ {
-			newX := p.X + dx
-			newY := p.Y + dy
+	dy := utils.Abs(p.sensor.Y - row)
 
-			// Check bounds
-			if newX >= 0 && newX < width && newY >= 0 && newY < height {
-				neighbours = append(neighbours, utils.Coord{X: newX, Y: newY})
-			}
-		}
+	if dx := radius - dy; dx >= 0 {
+		return span{p.sensor.X - dx, p.sensor.X + dx}, true
+	} else {
+		return span{}, false
 	}
-	return neighbours
 }
 
-func (g *grid) fill(p pair) {
-	dist := manhattanDistance(p.sensor, p.beacon)
+func buildKleePoints(row int, pairs []pair) []kleePoint {
+	points := make([]kleePoint, 0)
 
-	for _, position := range g.manhattanNeighbours(p.sensor, dist) {
-		if (*g)[position.Y][position.X] == '.' {
-			(*g)[position.Y][position.X] = 'X'
+	for _, p := range pairs {
+		if span, ok := p.manhattanSpan(row); ok {
+			points = append(points, kleePoint{span.start, false})
+			points = append(points, kleePoint{span.end, true})
 		}
 	}
+
+	sort.Slice(points, func(i, j int) bool {
+		left, right := points[i], points[j]
+		if left.x < right.x {
+			return true
+		} else if left.x > right.x {
+			return false
+		} else {
+			return left.isEnd
+		}
+	})
+
+	return points
+}
+
+func calculateTotalLength(points []kleePoint) int {
+	totalLength := 0
+	depth := 1
+
+	for i := 1; i < len(points); i++ {
+		prev, curr := points[i-1], points[i]
+		if diff := curr.x - prev.x; depth > 0 && diff > 0 {
+			totalLength += diff
+		}
+		if curr.isEnd {
+			depth--
+		} else {
+			depth++
+		}
+	}
+	return totalLength
 }
 
 func (d *day15) Part1() int {
-	for _, pair := range d.pairs {
-		d.grid.fill(pair)
-	}
-
-	count := 0
-	for _, cell := range d.grid[d.rowToCheck] {
-		if cell == 'X' {
-			count++
-		}
-	}
-
-	return count
+	points := buildKleePoints(d.rowToCheck, d.pairs)
+	return calculateTotalLength(points)
 }
 
 func Parse(filename string, rowToCheck int) *day15 {
@@ -81,39 +95,12 @@ func Parse(filename string, rowToCheck int) *day15 {
 
 	pairs := make([]pair, len(data))
 
-	var maxRow, maxCol int
-	minRow, minCol := 1000, 1000
-
 	for i, line := range data {
 		fmt.Sscanf(line, "Sensor at x=%d, y=%d: closest beacon is at x=%d, y=%d",
 			&pairs[i].sensor.X, &pairs[i].sensor.Y, &pairs[i].beacon.X, &pairs[i].beacon.Y)
-		maxRow = max(maxRow, pairs[i].sensor.Y, pairs[i].beacon.Y)
-		maxCol = max(maxCol, pairs[i].sensor.X, pairs[i].beacon.X)
-		minRow = min(minRow, pairs[i].sensor.Y, pairs[i].beacon.Y)
-		minCol = min(minCol, pairs[i].sensor.X, pairs[i].beacon.X)
 	}
 
-	width := maxCol - minCol + 1
-	height := maxRow - minRow + 1
-
-	grid := make([][]rune, height)
-	for y := range grid {
-		grid[y] = make([]rune, width)
-		for x := range grid[y] {
-			grid[y][x] = '.'
-		}
-	}
-
-	for i := range pairs {
-		pairs[i].sensor.X -= minCol
-		pairs[i].sensor.Y -= minRow
-		pairs[i].beacon.X -= minCol
-		pairs[i].beacon.Y -= minRow
-		grid[pairs[i].sensor.Y][pairs[i].sensor.X] = 'S'
-		grid[pairs[i].beacon.Y][pairs[i].beacon.X] = 'B'
-	}
-
-	return &day15{pairs, rowToCheck, grid}
+	return &day15{pairs, rowToCheck}
 }
 
 func Solve(filename string) {
