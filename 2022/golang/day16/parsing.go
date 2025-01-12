@@ -63,7 +63,9 @@ func Parse(filename string) *day16 {
 		var v valve
 		v.index = day.findValve(matches[1])
 		v.flowRate = utils.Must(strconv.Atoi(matches[2]))
-		for _, tunnel := range strings.Split(matches[3], ", ") {
+		split := strings.Split(matches[3], ", ")
+		v.tunnels = make([]int, 0, len(split))
+		for _, tunnel := range split {
 			v.tunnels = append(v.tunnels, day.findValve(tunnel))
 		}
 		day.addValve(v)

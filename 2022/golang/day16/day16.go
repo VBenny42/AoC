@@ -2,113 +2,145 @@ package day16
 
 import (
 	"fmt"
-
-	"gonum.org/v1/gonum/stat/combin"
+	"math"
 )
 
-type state1 struct {
-	valve      int
-	openValves uint
-	pressure   int
-}
+func (d *day16) simulate(
+	g *graph,
+	openValves uint64,
+	startingIndex, timeRemaining int,
+) (int, map[uint64]int) {
+	nonZeroValves := make([]valve, 0, len(d.valves)/2)
 
-type cacheKey1 struct {
-	valve      int
-	openValves uint
-}
-
-func (d *day16) getMaxPressure(timeRemaining int) []state1 {
-	states := []state1{{valve: d.findValve("AA"), openValves: 0, pressure: 0}}
-	bestChoices := make(map[cacheKey1]int)
-
-	for minute := 1; minute < timeRemaining; minute++ {
-		var newStates []state1
-
-		for _, state := range states {
-			key := cacheKey1{valve: state.valve, openValves: state.openValves}
-			if bestPressure, ok := bestChoices[key]; ok && bestPressure >= state.pressure {
-				continue
-			}
-			bestChoices[key] = state.pressure
-
-			valve := d.valves[state.valve]
-			flowRate := valve.flowRate
-			mask := uint(1) << state.valve
-			if state.openValves&mask == 0 && flowRate > 0 {
-				newStates = append(newStates,
-					state1{
-						valve:      state.valve,
-						openValves: state.openValves | mask,
-						pressure:   state.pressure + (timeRemaining-minute)*flowRate,
-					})
-			}
-
-			for _, tunnel := range valve.tunnels {
-				newStates = append(newStates,
-					state1{
-						valve:      tunnel,
-						openValves: state.openValves,
-						pressure:   state.pressure,
-					})
-			}
-
-			states = newStates
+	for _, v := range d.valves {
+		if v.flowRate > 0 {
+			nonZeroValves = append(nonZeroValves, v)
 		}
 	}
 
-	return states
+	pressureReleased := 0
+	memo := make(map[uint64]int)
+
+	pressureReleased = d.travellingSalesman(
+		memo,
+		nonZeroValves,
+		g,
+		openValves,
+		timeRemaining,
+		pressureReleased,
+		startingIndex,
+	)
+
+	return pressureReleased, memo
+}
+
+func (d *day16) travellingSalesman(
+	memo map[uint64]int,
+	nonZeroValves []valve,
+	g *graph,
+	openValves uint64,
+	timeRemaining, pressureReleased, index int,
+) int {
+	maxFlow := pressureReleased
+
+	if memo[openValves] > pressureReleased {
+		return memo[openValves]
+	}
+	memo[openValves] = pressureReleased
+
+	for _, v := range nonZeroValves {
+		currentTimeRemaining := timeRemaining - (*g)[index][v.index] - 1
+
+		if openValves&(1<<v.index) == 0 || currentTimeRemaining < 0 {
+			continue
+		}
+
+		newOpenValves := openValves & ^(1 << v.index)
+		currentPressureReleased := pressureReleased + (currentTimeRemaining * v.flowRate)
+
+		maxFlow = max(
+			maxFlow,
+			d.travellingSalesman(
+				memo,
+				nonZeroValves,
+				g,
+				newOpenValves,
+				currentTimeRemaining,
+				currentPressureReleased,
+				v.index,
+			),
+		)
+	}
+
+	return maxFlow
+}
+
+type graph [][]int
+
+func (d *day16) initGraph() graph {
+	g := make(graph, len(d.names))
+	for i := range g {
+		g[i] = make([]int, len(d.names))
+		for j := range g[i] {
+			g[i][j] = math.MaxInt32
+		}
+	}
+
+	for i, v := range d.valves {
+		for _, tunnel := range v.tunnels {
+			g[i][tunnel] = 1
+		}
+	}
+
+	return g
+}
+
+func (g *graph) floydWarshall() {
+	for k := range *g {
+		for i := range *g {
+			for j := range *g {
+				if (*g)[i][k]+(*g)[k][j] < (*g)[i][j] {
+					(*g)[i][j] = (*g)[i][k] + (*g)[k][j]
+				}
+			}
+		}
+	}
 }
 
 func (d *day16) Part1() int {
-	states := d.getMaxPressure(30)
+	startingIndex := d.findValve("AA")
 
-	bestPressure := 0
-	for _, state := range states {
-		if state.pressure > bestPressure {
-			bestPressure = state.pressure
-		}
-	}
+	graph := d.initGraph()
+	graph.floydWarshall()
 
-	return bestPressure
-}
+	startingMask := uint64(1<<len(graph)) - 1
 
-type state2 struct {
-	person     int
-	elephant   int
-	openValves uint
-	pressure   int
-}
+	pressureReleased, _ := d.simulate(&graph, startingMask, startingIndex, 30)
 
-type cacheKey2 struct {
-	low, high  int
-	openValves uint
-}
-
-func orderLowToHigh(a, b int) (int, int) {
-	if a < b {
-		return a, b
-	}
-	return b, a
+	return pressureReleased
 }
 
 func (d *day16) Part2() int {
-	states := d.getMaxPressure(26)
+	startingIndex := d.findValve("AA")
 
-	gen := combin.NewCombinationGenerator(len(states), 2)
-	combinations := make([]int, 2)
+	graph := d.initGraph()
+	graph.floydWarshall()
 
-	bestPressure := 0
+	startingMask := uint64(1<<len(graph)) - 1
 
-	for gen.Next() {
-		gen.Combination(combinations)
+	_, memo := d.simulate(&graph, startingMask, startingIndex, 26)
 
-		person, elephant := states[combinations[0]], states[combinations[1]]
+	maxPressureReleased := 0
 
-		// check if openValves are disjoint
-		bestPressure = max(bestPressure, person.pressure+elephant.pressure)
+	for personMask, personFlow := range memo {
+		for elephantMask, elephantFlow := range memo {
+			if (^personMask)&(^elephantMask)&startingMask == 0 {
+				maxPressureReleased = max(maxPressureReleased, personFlow+elephantFlow)
+			}
+		}
 	}
 
-	return bestPressure
+	return maxPressureReleased
 }
 
 func Solve(filename string) {
