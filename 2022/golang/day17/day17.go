@@ -7,16 +7,12 @@ import (
 )
 
 type day17 struct {
-	heights    []int
 	directions []utils.Coord
 }
 
-type rock struct {
-	shapes    []utils.Coord
-	leftMost  int
-	rightMost int
-	bottoms   []int
-}
+type rock []utils.Coord
+
+const width = 7
 
 var rockShapes = []rock{
 	minusShape,
@@ -26,79 +22,136 @@ var rockShapes = []rock{
 	boxShape,
 }
 
-func (d *day17) simulate(numRocks int) int {
-	var r rock
-	rockIdx := 0
-	dirIdx := 0
-	for rockIdx < numRocks {
-		fmt.Println("LOG: rockIdx:", rockIdx)
-		r = rockShapes[rockIdx%5]
-		for i := range r.shapes {
-			r.shapes[i].Y += utils.MaxSlice(d.heights) + 3
-		}
-
-		settled := false
-		for !settled {
-			// 1. Handle jet movement
-			direction := d.directions[dirIdx%len(d.directions)]
-			dirIdx++
-
-			// Try moving horizontally
-			canMove := true
-			newPositions := make([]utils.Coord, len(r.shapes))
-			for i, shape := range r.shapes {
-				newPos := shape
-				if direction == utils.Left {
-					newPos.X--
-				} else {
-					newPos.X++
-				}
-				// Check boundaries and collisions
-				if newPos.X < 0 || newPos.X > 6 || d.checkCollision(newPos) {
-					canMove = false
-					break
-				}
-				newPositions[i] = newPos
-			}
-
-			if canMove {
-				r.shapes = newPositions
-			}
-
-			// 2. Try falling
-			canFall := true
-			for _, bottomCell := range r.bottoms {
-				pos := r.shapes[bottomCell]
-				if pos.Y-1 <= d.heights[pos.X] {
-					canFall = false
-					break
-				}
-			}
-
-			if !canFall {
-				// Rock comes to rest
-				for _, pos := range r.shapes {
-					d.heights[pos.X] = max(d.heights[pos.X], pos.Y)
-				}
-				settled = true
-			} else {
-				// Move rock down
-				for i := range r.shapes {
-					r.shapes[i].Y--
-				}
-			}
-		}
-		rockIdx++
-	}
-	return utils.MaxSlice(d.heights)
+type seenKey struct {
+	rockIndex      int
+	directionIndex int
 }
 
-func (d *day17) checkCollision(c utils.Coord) bool {
-	return c.Y <= d.heights[c.X]
+type seenValue struct {
+	seenKeyCount  int
+	rockCount     int
+	highestColumn int
+}
+
+type state struct {
+	directionCount int
+	rockCount      int
+	highestColumn  int
+	grid           [][width]bool
+	currentCoord   utils.Coord
+	addedByRepeats int
+	seen           map[seenKey]seenValue
+}
+
+func (s *state) isValid(newCoord utils.Coord, rock rock) bool {
+	for i := range rock {
+		x := newCoord.X + rock[i].X
+		y := newCoord.Y + rock[i].Y
+		for len(s.grid) <= y {
+			s.grid = append(s.grid, [width]bool{})
+		}
+		if x >= width || s.grid[y][x] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s *state) simulate(rockNum int, directions []utils.Coord) {
+	for s.rockCount < rockNum {
+		rock := rockShapes[s.rockCount%len(rockShapes)]
+		s.currentCoord = utils.Coord{X: 2, Y: s.highestColumn + 3}
+
+		for {
+			direction := directions[s.directionCount%len(directions)]
+			newCoord := utils.Coord{X: s.currentCoord.X, Y: s.currentCoord.Y}
+
+			switch direction {
+			case utils.Left:
+				newCoord.X--
+				if newCoord.X < 0 {
+					newCoord.X = 0
+				}
+			case utils.Right:
+				newCoord.X++
+				if newCoord.X >= width {
+					newCoord.X = width - 1
+				}
+			}
+
+			if s.isValid(newCoord, rock) {
+				s.currentCoord = newCoord
+			}
+			s.directionCount++
+
+			newCoord = utils.Coord{X: s.currentCoord.X, Y: s.currentCoord.Y - 1}
+			if s.currentCoord.Y == 0 || !s.isValid(newCoord, rock) {
+				break
+			}
+
+			s.currentCoord = newCoord
+		}
+
+		for i := range rock {
+			x := s.currentCoord.X + rock[i].X
+			y := s.currentCoord.Y + rock[i].Y
+
+			for len(s.grid) <= y {
+				s.grid = append(s.grid, [width]bool{})
+			}
+
+			s.grid[y][x] = true
+			s.highestColumn = max(s.highestColumn, y+1)
+		}
+
+		if s.addedByRepeats == 0 {
+			key := seenKey{
+				rockIndex:      s.rockCount % len(rockShapes),
+				directionIndex: s.directionCount % len(directions),
+			}
+
+			if val, ok := s.seen[key]; ok {
+				if val.seenKeyCount == 2 {
+					highestColumnDiff := s.highestColumn - val.highestColumn
+					rockCountDiff := s.rockCount - val.rockCount
+					repeats := (rockNum - s.rockCount) / rockCountDiff
+					s.addedByRepeats = highestColumnDiff * repeats
+					s.rockCount += rockCountDiff * repeats
+				}
+				val.seenKeyCount++
+				val.rockCount = s.rockCount
+				val.highestColumn = s.highestColumn
+				s.seen[key] = val
+			} else {
+				s.seen[key] = seenValue{
+					seenKeyCount:  1,
+					rockCount:     s.rockCount,
+					highestColumn: s.highestColumn,
+				}
+			}
+		}
+
+		s.rockCount++
+	}
 }
 
 func (d *day17) Part1() int {
-	return d.simulate(2022)
+	s := state{}
+	s.seen = make(map[seenKey]seenValue)
+
+	s.simulate(2022, d.directions)
+
+	return s.highestColumn + s.addedByRepeats
+}
+
+func (d *day17) Part2() int {
+	s := state{}
+	s.seen = make(map[seenKey]seenValue)
+
+	s.simulate(1000000000000, d.directions)
+
+	return s.highestColumn + s.addedByRepeats
 }
 
 func Parse(filename string) *day17 {
@@ -117,15 +170,12 @@ func Parse(filename string) *day17 {
 		}
 	}
 
-	return &day17{
-		directions: directions,
-		heights:    []int{0, 0, 0, 0, 0, 0, 0},
-	}
+	return &day17{directions}
 }
 
 func Solve(filename string) {
 	day := Parse(filename)
-	day = Parse("../inputs/day17/sample-input.txt")
 
 	fmt.Println("ANSWER1: highest column height after 2022 rocks:", day.Part1())
+	fmt.Println("ANSWER2: highest column height after 1_000_000_000_000 rocks:", day.Part2())
 }

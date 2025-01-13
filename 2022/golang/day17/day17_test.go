@@ -12,3 +12,9 @@ func TestPart1(t *testing.T) {
 
 	assert.Equal(t, 3068, d.Part1())
 }
+
+func TestPart2(t *testing.T) {
+	d := day17.Parse("../../inputs/day17/sample-input.txt")
+
+	assert.Equal(t, 1514285714288, d.Part2())
+}
