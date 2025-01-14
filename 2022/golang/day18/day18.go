@@ -8,19 +8,16 @@ import (
 	"github.com/VBenny42/AoC/2022/golang/utils"
 )
 
-type (
-	cube struct {
-		x, y, z int
-	}
-	grid [][][]bool
-)
-
-type day18 struct {
-	grid  grid
-	cubes []cube
+type cube struct {
+	x, y, z int
 }
 
-// directions represents the 6 adjacent faces of a cube
+type day18 struct {
+	cubes            []cube
+	grid             [][][]bool
+	maxX, maxY, maxZ int
+}
+
 var directions = []cube{
 	{x: 1, y: 0, z: 0},
 	{x: -1, y: 0, z: 0},
@@ -30,42 +27,87 @@ var directions = []cube{
 	{x: 0, y: 0, z: -1},
 }
 
-func (g *grid) neighbors(c cube) []cube {
-	var neighbors []cube
-	width, height, depth := len((*g)[0][0]), len((*g)[0]), len(*g)
-
-	for _, dir := range directions {
-		newX, newY, newZ := c.x+dir.x, c.y+dir.y, c.z+dir.z
-
-		if newX < 0 || newY < 0 || newZ < 0 ||
-			newX >= width || newY >= height || newZ >= depth {
-			continue
-		}
-
-		if (*g)[newZ][newY][newX] {
-			neighbors = append(neighbors, cube{newX, newY, newZ})
-		}
-	}
-
-	return neighbors
-}
-
 func (d *day18) Part1() int {
-	var surfaceArea int
+	var coveredSurfaceArea int
 
 	for _, cube := range d.cubes {
-		surfaceArea += 6 - len(d.grid.neighbors(cube))
+		for _, dir := range directions {
+			neighbor := cube
+			neighbor.x += dir.x
+			neighbor.y += dir.y
+			neighbor.z += dir.z
+			if neighbor.x >= 0 && neighbor.x <= d.maxX &&
+				neighbor.y >= 0 && neighbor.y <= d.maxY &&
+				neighbor.z >= 0 && neighbor.z <= d.maxZ &&
+				d.grid[neighbor.z][neighbor.y][neighbor.x] {
+				coveredSurfaceArea++
+			}
+		}
 	}
 
-	return surfaceArea
+	return 6*len(d.cubes) - coveredSurfaceArea
+}
+
+func (d *day18) canReachEdge(c cube) bool {
+	queue := []cube{c}
+	seen := make(map[cube]bool)
+
+	for len(queue) > 0 {
+		curr := queue[0]
+		queue = queue[1:]
+
+		if seen[curr] || (curr.x >= 0 && curr.x <= d.maxX &&
+			curr.y >= 0 && curr.y <= d.maxY &&
+			curr.z >= 0 && curr.z <= d.maxZ) &&
+			d.grid[curr.z][curr.y][curr.x] {
+			continue
+		}
+		seen[curr] = true
+
+		// Check if we've reached an edge
+		if curr.x <= 0 || curr.x >= d.maxX ||
+			curr.y <= 0 || curr.y >= d.maxY ||
+			curr.z <= 0 || curr.z >= d.maxZ {
+			return true
+		}
+
+		// Add neighbors to queue
+		for _, dir := range directions {
+			next := cube{
+				x: curr.x + dir.x,
+				y: curr.y + dir.y,
+				z: curr.z + dir.z,
+			}
+			queue = append(queue, next)
+		}
+	}
+	return false
+}
+
+func (d *day18) Part2() int {
+	externalSurfaceArea := 0
+
+	for _, c := range d.cubes {
+		for _, dir := range directions {
+			next := cube{
+				x: c.x + dir.x,
+				y: c.y + dir.y,
+				z: c.z + dir.z,
+			}
+			if d.canReachEdge(next) {
+				externalSurfaceArea++
+			}
+		}
+	}
+
+	return externalSurfaceArea
 }
 
 func Parse(filename string) *day18 {
 	data := utils.ReadLines(filename)
-
+	cubes := make([]cube, len(data))
 	maxX, maxY, maxZ := 0, 0, 0
 
-	cubes := make([]cube, len(data))
 	for i, line := range data {
 		split := strings.Split(line, ",")
 		cubes[i] = cube{
@@ -79,22 +121,29 @@ func Parse(filename string) *day18 {
 	}
 
 	grid := make([][][]bool, maxZ+1)
-	for z := range grid {
-		grid[z] = make([][]bool, maxY+1)
-		for y := range grid[z] {
-			grid[z][y] = make([]bool, maxX+1)
+	for col := range grid {
+		grid[col] = make([][]bool, maxY+1)
+		for row := range grid[col] {
+			grid[col][row] = make([]bool, maxX+1)
 		}
 	}
 
-	for _, cube := range cubes {
-		grid[cube.z][cube.y][cube.x] = true
+	for _, c := range cubes {
+		grid[c.z][c.y][c.x] = true
 	}
 
-	return &day18{cubes: cubes, grid: grid}
+	return &day18{
+		cubes: cubes,
+		grid:  grid,
+		maxX:  maxX,
+		maxY:  maxY,
+		maxZ:  maxZ,
+	}
 }
 
 func Solve(filename string) {
 	day := Parse(filename)
 
 	fmt.Println("ANSWER1: total surface area:", day.Part1())
+	fmt.Println("ANSWER2: exterior surface area:", day.Part2())
 }
