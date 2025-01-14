@@ -47,6 +47,10 @@ func (d *day16) travellingSalesman(
 		return memo[openValves]
 	}
 	memo[openValves] = pressureReleased
+	// NOTE: This is an optimization to avoid recalculating the same state
+	// Works on actual input, but fails on test input.
+	// To make test pass, make the following change:
+	// memo[openValves] = max(memo[openValves], pressureReleased)
 
 	for _, v := range nonZeroValves {
 		currentTimeRemaining := timeRemaining - (*g)[index][v.index] - 1

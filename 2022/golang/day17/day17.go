@@ -137,7 +137,7 @@ func (s *state) simulate(rockNum int, directions []utils.Coord) {
 }
 
 func (d *day17) Part1() int {
-	s := state{}
+	var s state
 	s.seen = make(map[seenKey]seenValue)
 
 	s.simulate(2022, d.directions)
@@ -146,7 +146,7 @@ func (d *day17) Part1() int {
 }
 
 func (d *day17) Part2() int {
-	s := state{}
+	var s state
 	s.seen = make(map[seenKey]seenValue)
 
 	s.simulate(1000000000000, d.directions)

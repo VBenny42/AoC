@@ -49,7 +49,7 @@ func (d *day05) Part1() string {
 		*dstStack = append(*dstStack, movedElements...)
 	}
 
-	topVals := strings.Builder{}
+	var topVals strings.Builder
 
 	for _, stack := range d.Stacks {
 		topVals.WriteRune(stack[len(stack)-1])
@@ -73,7 +73,7 @@ func (d *day05) Part2() string {
 		*dstStack = append(*dstStack, movedElements...)
 	}
 
-	topVals := strings.Builder{}
+	var topVals strings.Builder
 
 	for _, stack := range d.Stacks {
 		topVals.WriteRune(stack[len(stack)-1])

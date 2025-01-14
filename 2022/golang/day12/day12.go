@@ -75,7 +75,7 @@ func (d *day12) Part1And2() (int, int) {
 	actualStart, _ := d.bfs(d.start)
 	minStart := actualStart
 
-	wg := sync.WaitGroup{}
+	var wg sync.WaitGroup
 	wg.Add(len(d.startPoints))
 	ch := make(chan int, len(d.startPoints))
 

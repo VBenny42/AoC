@@ -48,7 +48,7 @@ func (g *grid) makeBitmap(filename string) {
 	defer file.Close()
 
 	grid := *g
-	line := strings.Builder{}
+	var line strings.Builder
 	line.WriteString(fmt.Sprintf("P2\n%d %d\n15\n", len(grid[0]), len(grid)))
 
 	mapping := map[rune]string{
