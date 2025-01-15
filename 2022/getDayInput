@@ -1,6 +1,6 @@
-#!/usr/sh
+#!/bin/sh
 
-# Usage: ./getDayInput.sh <day_number>
+# Usage: ./getDayInput <day_number>
 # Ensure that you have a session.txt file in the same directory as this script
 # Should get from adventofcode website
 
