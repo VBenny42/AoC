@@ -94,7 +94,7 @@ func comparePair(left, right packet) (bool, error) {
 		minLen = len(right.children)
 	}
 
-	for i := 0; i < minLen; i++ {
+	for i := range minLen {
 		l, r := left.children[i], right.children[i]
 
 		if l.value != nil && r.value != nil {

@@ -59,7 +59,7 @@ func (d *day09) findTailPositions(knotNum int) int {
 	for _, motion := range d.Motions {
 		for range motion.Distance {
 			updateHead(&ropeStack[0], motion.Direction)
-			for i := 0; i < knotNum-1; i++ {
+			for i := range knotNum - 1 {
 				ropeStack[i+1] = updateTail(ropeStack[i+1], ropeStack[i])
 			}
 			tailSet.Add(ropeStack[knotNum-1])

@@ -94,7 +94,7 @@ func (d *day15) findVacantPoint() utils.Coord {
 
 	numWorkers := runtime.NumCPU()
 
-	for row := 0; row < numWorkers; row++ {
+	for row := range numWorkers {
 		go checkRows(row, numWorkers, d.bounds, d.pairs, beacons, results, failed)
 	}
 

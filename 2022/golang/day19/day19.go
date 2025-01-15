@@ -36,8 +36,8 @@ type day19 struct {
 	blueprints []blueprint
 }
 
-func startingState(timeRemaining int) *state {
-	return &state{
+func startingState(timeRemaining int) state {
+	return state{
 		timeRemaining: timeRemaining,
 		inventory:     [3]int{0, 0, 0},
 		// Start off with 1 ore robot
@@ -47,7 +47,7 @@ func startingState(timeRemaining int) *state {
 }
 
 func (s *state) canMakeRobot(blueprint blueprint, robot robotType) bool {
-	for i := 0; i < 3; i++ {
+	for i := range s.inventory {
 		if s.inventory[i] < blueprint.costs[robot][i] {
 			return false
 		}
@@ -64,7 +64,7 @@ func (s *state) makeAnotherRobot(blueprint blueprint, robot robotType) (newState
 	copy(newState.robots[:], s.robots[:])
 
 	for (!newState.canMakeRobot(blueprint, robot)) && (newState.timeRemaining > 1) {
-		for i := 0; i < 3; i++ {
+		for i := range newState.inventory {
 			newState.inventory[i] += newState.robots[i]
 		}
 		newState.timeRemaining--
@@ -73,7 +73,7 @@ func (s *state) makeAnotherRobot(blueprint blueprint, robot robotType) (newState
 	newState.timeRemaining--
 
 	costs := blueprint.costs[robot]
-	for i := 0; i < 3; i++ {
+	for i := range newState.inventory {
 		newState.inventory[i] = newState.inventory[i] - costs[i] + newState.robots[i]
 	}
 
@@ -88,7 +88,12 @@ func (s *state) makeAnotherRobot(blueprint blueprint, robot robotType) (newState
 
 // Limit values were chosen by trial and error
 // Just for optimization purposes, can use without
-func (s *state) findMaxGeodes(blueprint blueprint, limits [4]int) int {
+// ---
+// I changed the function signature to accept state as an argument
+// I think the garbage collector was holding onto the state objects
+// due to the recursive calls to this function
+// It got a bit faster after this change, ~20ms
+func findMaxGeodes(s state, blueprint blueprint, limits [4]int) int {
 	if s.timeRemaining == 1 {
 		return s.geodes
 	}
@@ -108,7 +113,7 @@ func (s *state) findMaxGeodes(blueprint blueprint, limits [4]int) int {
 			continue
 		}
 
-		score := nextState.findMaxGeodes(blueprint, limits)
+		score := findMaxGeodes(nextState, blueprint, limits)
 		best = max(best, score)
 	}
 
@@ -116,7 +121,10 @@ func (s *state) findMaxGeodes(blueprint blueprint, limits [4]int) int {
 }
 
 func (d *day19) Part1() int {
-	qualityLevelSum := 0
+	var (
+		qualityLevelSum int
+		startState      = startingState(24)
+	)
 
 	var (
 		wg      sync.WaitGroup
@@ -127,8 +135,7 @@ func (d *day19) Part1() int {
 	for i := range d.blueprints {
 		go func(i int) {
 			defer wg.Done()
-			levelCh <- startingState(24).
-				findMaxGeodes(d.blueprints[i], [4]int{18, 6, 3, 2}) * (i + 1)
+			levelCh <- findMaxGeodes(startState, d.blueprints[i], [4]int{18, 6, 3, 2}) * (i + 1)
 		}(i)
 	}
 
@@ -146,8 +153,9 @@ func (d *day19) Part1() int {
 
 func (d *day19) Part2() int {
 	var (
-		product = 1
-		limit   = min(3, len(d.blueprints))
+		product    = 1
+		limit      = min(3, len(d.blueprints))
+		startState = startingState(32)
 	)
 
 	var (
@@ -156,11 +164,10 @@ func (d *day19) Part2() int {
 	)
 	wg.Add(limit)
 
-	for i := 0; i < limit; i++ {
+	for i := range limit {
 		go func(i int) {
 			defer wg.Done()
-			productCh <- startingState(32).
-				findMaxGeodes(d.blueprints[i], [4]int{24, 10, 5, 2})
+			productCh <- findMaxGeodes(startState, d.blueprints[i], [4]int{24, 10, 5, 2})
 		}(i)
 	}
 
