@@ -36,16 +36,6 @@ type day19 struct {
 	blueprints []blueprint
 }
 
-func startingState(timeRemaining int) state {
-	return state{
-		timeRemaining: timeRemaining,
-		inventory:     [3]int{0, 0, 0},
-		// Start off with 1 ore robot
-		robots: [3]int{1, 0, 0},
-		geodes: 0,
-	}
-}
-
 func (s *state) canMakeRobot(blueprint blueprint, robot robotType) bool {
 	for i := range s.inventory {
 		if s.inventory[i] < blueprint.costs[robot][i] {
@@ -121,10 +111,11 @@ func findMaxGeodes(s state, blueprint blueprint, limits [4]int) int {
 }
 
 func (d *day19) Part1() int {
-	var (
-		qualityLevelSum int
-		startState      = startingState(24)
-	)
+	var qualityLevelSum int
+
+	startState := new(state)
+	startState.timeRemaining = 24
+	startState.robots[ore] = 1
 
 	var (
 		wg      sync.WaitGroup
@@ -135,7 +126,7 @@ func (d *day19) Part1() int {
 	for i := range d.blueprints {
 		go func(i int) {
 			defer wg.Done()
-			levelCh <- findMaxGeodes(startState, d.blueprints[i], [4]int{18, 6, 3, 2}) * (i + 1)
+			levelCh <- findMaxGeodes(*startState, d.blueprints[i], [4]int{18, 6, 3, 2}) * (i + 1)
 		}(i)
 	}
 
@@ -153,10 +144,13 @@ func (d *day19) Part1() int {
 
 func (d *day19) Part2() int {
 	var (
-		product    = 1
-		limit      = min(3, len(d.blueprints))
-		startState = startingState(32)
+		product = 1
+		limit   = min(3, len(d.blueprints))
 	)
+
+	startState := new(state)
+	startState.timeRemaining = 32
+	startState.robots[ore] = 1
 
 	var (
 		wg        sync.WaitGroup
@@ -167,7 +161,7 @@ func (d *day19) Part2() int {
 	for i := range limit {
 		go func(i int) {
 			defer wg.Done()
-			productCh <- findMaxGeodes(startState, d.blueprints[i], [4]int{24, 10, 5, 2})
+			productCh <- findMaxGeodes(*startState, d.blueprints[i], [4]int{24, 10, 5, 2})
 		}(i)
 	}
 
