@@ -119,6 +119,7 @@ func (d *day21) Part2() int {
 		return d.solveForHumn(d.monkeys["root"].op.left, rootRightExpression)
 	}
 
+	// Shouldn't reach here
 	return 0
 }
 
@@ -145,7 +146,7 @@ func Parse(filename string) *day21 {
 		}
 	}
 
-	return &day21{monkeys: monkeys}
+	return &day21{monkeys}
 }
 
 func Solve(filename string) {
