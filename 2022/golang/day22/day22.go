@@ -141,9 +141,7 @@ func (d *day22) move3d(curr state, currFace face, amount int) (
 	for i := 0; i < amount; i++ {
 		nextState.position = newState.position.Add(moveDirection[newState.direction])
 
-		if nextState.position.Y < 0 ||
-			nextState.position.Y >= len(d.grid) ||
-			nextState.position.Y > d.faces[newFace][col].end ||
+		if nextState.position.Y > d.faces[newFace][col].end ||
 			nextState.position.Y < d.faces[newFace][col].start ||
 			nextState.position.X > d.faces[newFace][row].end ||
 			nextState.position.X < d.faces[newFace][row].start {

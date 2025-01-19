@@ -4,8 +4,6 @@ import (
 	"github.com/VBenny42/AoC/2022/golang/utils"
 )
 
-type squareBounds [2]bounds
-
 var sampleFaces = map[face]squareBounds{
 	one: {
 		row: bounds{start: 8, end: 11},

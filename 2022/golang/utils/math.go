@@ -2,11 +2,11 @@ package utils
 
 import "golang.org/x/exp/constraints"
 
-func Abs(x int) int {
-	if x < 0 {
-		return -x
+func Abs[T constraints.Signed](num T) T {
+	if num < 0 {
+		return -num
 	}
-	return x
+	return num
 }
 
 func MaxSlice[T constraints.Ordered](slice []T) T {

@@ -10,8 +10,6 @@ func (g grid) String() string {
 	for _, row := range g {
 		for _, cell := range row {
 			switch {
-			case cell == 0:
-				builder.WriteRune(' ')
 			case cell&(1<<last) != 0:
 				builder.WriteRune('X')
 			case cell&(1<<wall) != 0:
