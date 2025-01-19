@@ -15,7 +15,7 @@ func (d *day23) Part1() int {
 }
 
 func (d *day23) Part2() int {
-	return d.bitmap.rounds(10000000)
+	return d.bitmap.rounds(10000)
 }
 
 func Parse(filename string) *day23 {
@@ -26,7 +26,7 @@ func Parse(filename string) *day23 {
 	for y, line := range data {
 		for x, char := range line {
 			if char == '#' {
-				bitmap.set(utils.Coord{X: x, Y: y})
+				bitmap.set(utils.Coord{X: x + offset, Y: y + offset})
 			}
 		}
 	}

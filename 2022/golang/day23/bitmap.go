@@ -14,19 +14,24 @@ func (b *bitmap) rounds(limit int) int {
 	var (
 		rounds    int
 		direction int
+		current   utils.Coord
 	)
 
-	neighbours := make([]bool, 12)
+	var (
+		neighbours = make([]bool, 12)
+		proposed   = map[utils.Coord]utils.Coord{}
+		cannotMove = map[utils.Coord]struct{}{}
+	)
+
+	var elves, still int
 
 	for {
 		rounds++
 
-		var (
-			proposed   = map[utils.Coord]utils.Coord{}
-			cannotMove = map[utils.Coord]struct{}{}
-		)
+		clear(proposed)
+		clear(cannotMove)
 
-		var elves, still int
+		elves, still = 0, 0
 
 		for y, row := range *b {
 			for x := range row {
@@ -34,7 +39,7 @@ func (b *bitmap) rounds(limit int) int {
 					continue
 				}
 				elves++
-				current := utils.Coord{X: x - offset, Y: y - offset}
+				current = utils.Coord{X: x, Y: y}
 
 				// NW
 				neighbours[0] = b.get(current.Add(utils.Up).Add(utils.Left))
@@ -135,15 +140,15 @@ func (b *bitmap) rounds(limit int) int {
 }
 
 func (b *bitmap) set(c utils.Coord) {
-	(*b)[c.Y+offset][c.X+offset] = true
+	(*b)[c.Y][c.X] = true
 }
 
 func (b *bitmap) get(c utils.Coord) bool {
-	return (*b)[c.Y+offset][c.X+offset]
+	return (*b)[c.Y][c.X]
 }
 
 func (b *bitmap) unset(c utils.Coord) {
-	(*b)[c.Y+offset][c.X+offset] = false
+	(*b)[c.Y][c.X] = false
 }
 
 func (b *bitmap) bounds() bounds {
