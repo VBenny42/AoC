@@ -7,7 +7,7 @@ import (
 )
 
 func TestPart1(t *testing.T) {
-	d := Parse("../../inputs/day24/sample-input.txt")
+	d := Parse("inputs/day24/sample-input.txt")
 
 	val, _ := d.Part1And2()
 
@@ -15,7 +15,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	d := Parse("../../inputs/day24/sample-input.txt")
+	d := Parse("inputs/day24/sample-input.txt")
 
 	_, val := d.Part1And2()
 

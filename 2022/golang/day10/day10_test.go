@@ -10,13 +10,13 @@ import (
 )
 
 func TestPart1(t *testing.T) {
-	d := day10.Parse("../../inputs/day10/sample-input.txt")
+	d := day10.Parse("inputs/day10/sample-input.txt")
 
 	assert.Equal(t, 13140, d.Part1())
 }
 
 func TestPart2(t *testing.T) {
-	d := day10.Parse("../../inputs/day10/sample-input.txt")
+	d := day10.Parse("inputs/day10/sample-input.txt")
 
 	file := utils.Must(os.ReadFile("../../inputs/day10/sample-output.txt"))
 

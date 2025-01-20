@@ -1,12 +1,13 @@
 package utils
 
 import (
-	"os"
 	"strings"
+
+	"github.com/VBenny42/AoC/2022/golang/embeds"
 )
 
 func ReadLines(filename string) []string {
-	file := Must(os.ReadFile(filename))
+	file := Must(embeds.Inputs.ReadFile(filename))
 
 	lines := strings.Trim(string(file), "\n")
 
@@ -14,7 +15,7 @@ func ReadLines(filename string) []string {
 }
 
 func ReadTrimmed(filename string) string {
-	file := Must(os.ReadFile(filename))
+	file := Must(embeds.Inputs.ReadFile(filename))
 
 	return strings.Trim(string(file), "\n")
 }

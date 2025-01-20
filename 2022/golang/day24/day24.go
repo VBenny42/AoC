@@ -9,10 +9,9 @@ import (
 type blizzard struct {
 	startPos  utils.Coord
 	direction utils.Coord
-	char      rune
 }
 
-type grid [][]rune
+type grid [][]bool
 
 type day24 struct {
 	startPos  utils.Coord
@@ -20,7 +19,7 @@ type day24 struct {
 	blizzards []blizzard
 }
 
-func (b blizzard) calculateNextPos(steps int) (next utils.Coord) {
+func (b *blizzard) calculateNextPos(steps int) (next utils.Coord) {
 	next.X = (b.startPos.X + b.direction.X*steps) % totalColsGlobal
 	next.Y = (b.startPos.Y + b.direction.Y*steps) % totalRowsGlobal
 
@@ -39,20 +38,12 @@ func (d *day24) getRoomState(steps int, memo map[int]grid) grid {
 
 	grid := make(grid, totalRowsGlobal)
 	for i := range grid {
-		grid[i] = make([]rune, totalColsGlobal)
+		grid[i] = make([]bool, totalColsGlobal)
 	}
 
-	for _, b := range d.blizzards {
-		nextPos := b.calculateNextPos(steps)
-		grid[nextPos.Y][nextPos.X] = b.char
-	}
-
-	for y := 0; y < totalRowsGlobal; y++ {
-		for x := 0; x < totalColsGlobal; x++ {
-			if grid[y][x] == 0 {
-				grid[y][x] = '.'
-			}
-		}
+	for i := range d.blizzards {
+		nextPos := d.blizzards[i].calculateNextPos(steps)
+		grid[nextPos.Y][nextPos.X] = true
 	}
 
 	memo[steps] = grid
@@ -60,18 +51,14 @@ func (d *day24) getRoomState(steps int, memo map[int]grid) grid {
 	return grid
 }
 
-func (d *day24) bfs(stepsElapsed int) int {
-	memo := make(map[int]grid)
+type node struct {
+	steps int
+	pos   utils.Coord
+}
 
-	type node struct {
-		steps int
-		pos   utils.Coord
-	}
-
-	queue := make([]node, 0, 1400)
+func (d *day24) bfs(stepsElapsed int, memo map[int]grid, seen map[node]bool) int {
+	queue := make([]node, 0, 1000)
 	queue = append(queue, node{steps: stepsElapsed, pos: d.startPos})
-
-	seen := make(map[node]bool)
 
 	for len(queue) > 0 {
 		curr := queue[0]
@@ -101,7 +88,7 @@ func (d *day24) bfs(stepsElapsed int) int {
 				return curr.steps + 1
 			}
 
-			if grid[nextPos.Y][nextPos.X] != '.' {
+			if grid[nextPos.Y][nextPos.X] {
 				continue
 			}
 
@@ -109,7 +96,7 @@ func (d *day24) bfs(stepsElapsed int) int {
 		}
 
 		if curr.pos == d.startPos ||
-			grid[curr.pos.Y][curr.pos.X] == '.' {
+			!grid[curr.pos.Y][curr.pos.X] {
 			queue = append(queue, node{steps: curr.steps + 1, pos: curr.pos})
 		}
 	}
@@ -118,12 +105,22 @@ func (d *day24) bfs(stepsElapsed int) int {
 }
 
 func (d *day24) Part1And2() (int, int) {
-	firstLeg := d.bfs(0)
+	var (
+		memo = make(map[int]grid)
+		seen = make(map[node]bool)
+	)
+
+	firstLeg := d.bfs(0, memo, seen)
+	clear(seen)
+
 	actualStart, actualEnd := d.startPos, d.endPos
 	d.startPos, d.endPos = actualEnd, actualStart
-	secondLeg := d.bfs(firstLeg)
+
+	secondLeg := d.bfs(firstLeg, memo, seen)
+	clear(seen)
+
 	d.startPos, d.endPos = actualStart, actualEnd
-	return firstLeg, d.bfs(secondLeg)
+	return firstLeg, d.bfs(secondLeg, memo, seen)
 }
 
 var totalRowsGlobal, totalColsGlobal int
@@ -159,25 +156,21 @@ func Parse(filename string) *day24 {
 				blizzards = append(blizzards, blizzard{
 					startPos:  startPos,
 					direction: utils.Right,
-					char:      '>',
 				})
 			case '<':
 				blizzards = append(blizzards, blizzard{
 					startPos:  startPos,
 					direction: utils.Left,
-					char:      '<',
 				})
 			case '^':
 				blizzards = append(blizzards, blizzard{
 					startPos:  startPos,
 					direction: utils.Up,
-					char:      '^',
 				})
 			case 'v':
 				blizzards = append(blizzards, blizzard{
 					startPos:  startPos,
 					direction: utils.Down,
-					char:      'v',
 				})
 			case '.', '#':
 			// Do nothing

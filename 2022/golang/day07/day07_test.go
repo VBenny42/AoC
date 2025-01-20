@@ -8,7 +8,7 @@ import (
 )
 
 func TestParsing(t *testing.T) {
-	d := day07.Parse("../../inputs/day07/sample-input.txt")
+	d := day07.Parse("inputs/day07/sample-input.txt")
 
 	assert.Equal(t, 48381165, d.Directories["/"])
 	assert.Equal(t, 94853, d.Directories["/a/"])
@@ -17,13 +17,13 @@ func TestParsing(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	d := day07.Parse("../../inputs/day07/sample-input.txt")
+	d := day07.Parse("inputs/day07/sample-input.txt")
 
 	assert.Equal(t, 95437, d.Part1())
 }
 
 func TestPart2(t *testing.T) {
-	d := day07.Parse("../../inputs/day07/sample-input.txt")
+	d := day07.Parse("inputs/day07/sample-input.txt")
 
 	assert.Equal(t, 24933642, d.Part2())
 }

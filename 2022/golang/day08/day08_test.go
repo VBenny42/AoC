@@ -9,7 +9,7 @@ import (
 )
 
 func TestPart1(t *testing.T) {
-	d := day08.Parse("../../inputs/day08/sample-input.txt")
+	d := day08.Parse("inputs/day08/sample-input.txt")
 
 	value, _ := d.Part1and2()
 
@@ -17,7 +17,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	d := day08.Parse("../../inputs/day08/sample-input.txt")
+	d := day08.Parse("inputs/day08/sample-input.txt")
 
 	_, value := d.Part1and2()
 
@@ -36,7 +36,7 @@ func BenchmarkSolve(b *testing.B) {
 	b.StartTimer()
 
 	for range b.N {
-		day08.Solve("../../inputs/day08/sample-input.txt")
+		day08.Solve("inputs/day08/sample-input.txt")
 	}
 
 	os.Stdout = origStdout

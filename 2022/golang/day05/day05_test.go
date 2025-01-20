@@ -8,7 +8,7 @@ import (
 )
 
 func TestParsing(t *testing.T) {
-	d := day05.Parse("../../inputs/day05/sample-input.txt")
+	d := day05.Parse("inputs/day05/sample-input.txt")
 
 	assert.Equal(t, 3, len(d.Stacks))
 
@@ -20,13 +20,13 @@ func TestParsing(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	d := day05.Parse("../../inputs/day05/sample-input.txt")
+	d := day05.Parse("inputs/day05/sample-input.txt")
 
 	assert.Equal(t, "CMZ", d.Part1())
 }
 
 func TestPart2(t *testing.T) {
-	d := day05.Parse("../../inputs/day05/sample-input.txt")
+	d := day05.Parse("inputs/day05/sample-input.txt")
 
 	assert.Equal(t, "MCD", d.Part2())
 }

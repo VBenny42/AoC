@@ -8,7 +8,7 @@ import (
 )
 
 func TestParsing(t *testing.T) {
-	day := day09.Parse("../../inputs/day09/sample-input.txt")
+	day := day09.Parse("inputs/day09/sample-input.txt")
 
 	check := []day09.Motion{
 		{Direction: 'R', Distance: 4},
@@ -25,13 +25,13 @@ func TestParsing(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	day := day09.Parse("../../inputs/day09/sample-input.txt")
+	day := day09.Parse("inputs/day09/sample-input.txt")
 
 	assert.Equal(t, 13, day.Part1())
 }
 
 func TestPart2(t *testing.T) {
-	day := day09.Parse("../../inputs/day09/sample-input-larger.txt")
+	day := day09.Parse("inputs/day09/sample-input-larger.txt")
 
 	assert.Equal(t, 36, day.Part2())
 }

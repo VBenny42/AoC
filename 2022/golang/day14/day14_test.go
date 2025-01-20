@@ -9,7 +9,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	d := day14.Parse("../../inputs/day14/sample-input.txt")
+	d := day14.Parse("inputs/day14/sample-input.txt")
 
 	assert.Equal(t, len(d.Lines), 5)
 
@@ -25,7 +25,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	d := day14.Parse("../../inputs/day14/sample-input.txt")
+	d := day14.Parse("inputs/day14/sample-input.txt")
 
 	value, _ := d.Part1And2()
 
@@ -33,7 +33,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	d := day14.Parse("../../inputs/day14/sample-input.txt")
+	d := day14.Parse("inputs/day14/sample-input.txt")
 
 	_, value := d.Part1And2()
 
