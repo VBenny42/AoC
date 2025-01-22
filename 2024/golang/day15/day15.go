@@ -3,8 +3,9 @@ package day15
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"sort"
+
+	"github.com/VBenny42/AoC/2024/golang/embeds"
 )
 
 type (
@@ -317,7 +318,7 @@ func (d *day15) Part2() int {
 }
 
 func Parse(filename string) *day15 {
-	file, err := os.Open(filename)
+	file, err := embeds.Inputs.Open(filename)
 	if err != nil {
 		fmt.Println("Error opening file", err)
 		return nil

@@ -2,8 +2,9 @@ package day25
 
 import (
 	"fmt"
-	"os"
 	"strings"
+
+	"github.com/VBenny42/AoC/2024/golang/embeds"
 )
 
 type schematic [5]int
@@ -51,7 +52,7 @@ func (d *day25) Part1() int {
 }
 
 func Parse(filename string) *day25 {
-	data, err := os.ReadFile(filename)
+	data, err := embeds.Inputs.ReadFile(filename)
 	if err != nil {
 		fmt.Println("Error reading file")
 		return nil

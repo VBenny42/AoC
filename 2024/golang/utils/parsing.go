@@ -1,12 +1,13 @@
 package utils
 
 import (
-	"os"
 	"strings"
+
+	"github.com/VBenny42/AoC/2024/golang/embeds"
 )
 
 func SplitLines(filename string) []string {
-	file, err := os.ReadFile(filename)
+	file, err := embeds.Inputs.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
@@ -17,7 +18,7 @@ func SplitLines(filename string) []string {
 }
 
 func JoinFile(filename string) string {
-	file, err := os.ReadFile(filename)
+	file, err := embeds.Inputs.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}

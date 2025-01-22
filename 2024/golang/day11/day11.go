@@ -4,7 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"math"
-	"os"
+
+	"github.com/VBenny42/AoC/2024/golang/embeds"
 )
 
 type cacheKey struct {
@@ -64,7 +65,7 @@ func (d *day11) Part2() int {
 }
 
 func Parse(filename string) *day11 {
-	file, err := os.Open(filename)
+	file, err := embeds.Inputs.Open(filename)
 	if err != nil {
 		panic(err)
 	}

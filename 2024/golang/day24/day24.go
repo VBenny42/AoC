@@ -3,10 +3,11 @@ package day24
 import (
 	"fmt"
 	"log"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/VBenny42/AoC/2024/golang/embeds"
 )
 
 type gate struct {
@@ -161,7 +162,7 @@ func (d *day24) Part2() string {
 }
 
 func Parse(filename string) *day24 {
-	file, err := os.ReadFile(filename)
+	file, err := embeds.Inputs.ReadFile(filename)
 	if err != nil {
 		fmt.Println("File reading error", err)
 		return nil

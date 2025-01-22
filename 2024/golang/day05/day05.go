@@ -2,10 +2,11 @@ package day05
 
 import (
 	"fmt"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
+
+	"github.com/VBenny42/AoC/2024/golang/embeds"
 )
 
 type day05 struct {
@@ -47,7 +48,7 @@ func (d *day05) Part1and2() (int, int) {
 }
 
 func Parse(filename string) *day05 {
-	file, err := os.ReadFile(filename)
+	file, err := embeds.Inputs.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}

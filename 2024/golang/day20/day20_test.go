@@ -8,7 +8,7 @@ import (
 )
 
 func TestPart1(t *testing.T) {
-	day := day20.Parse("../../inputs/day20/sample-input.txt", 2)
+	day := day20.Parse("inputs/day20/sample-input.txt", 2)
 
 	value, _ := day.Part1and2()
 
@@ -16,7 +16,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	day := day20.Parse("../../inputs/day20/sample-input.txt", 50)
+	day := day20.Parse("inputs/day20/sample-input.txt", 50)
 
 	_, value := day.Part1and2()
 
