@@ -3,7 +3,6 @@ package day01
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/VBenny42/AoC/2023/golang/utils"
@@ -30,16 +29,21 @@ func (d *day01) Part1() (sum int) {
 }
 
 func (d *day01) Part2() (sum int) {
-	digitsMap := map[string]int{
-		"one":   1,
-		"two":   2,
-		"three": 3,
-		"four":  4,
-		"five":  5,
-		"six":   6,
-		"seven": 7,
-		"eight": 8,
-		"nine":  9,
+	type digit struct {
+		actual int
+		ascii  string
+	}
+
+	digitsMap := map[string]digit{
+		"one":   {1, "1"},
+		"two":   {2, "2"},
+		"three": {3, "3"},
+		"four":  {4, "4"},
+		"five":  {5, "5"},
+		"six":   {6, "6"},
+		"seven": {7, "7"},
+		"eight": {8, "8"},
+		"nine":  {9, "9"},
 	}
 
 	for _, line := range d.lines {
@@ -47,14 +51,14 @@ func (d *day01) Part2() (sum int) {
 		firstIndex, lastIndex := len(line), -1
 
 		for word, digit := range digitsMap {
-			digitIndex := strings.Index(line, strconv.Itoa(digit))
+			digitIndex := strings.Index(line, digit.ascii)
 			if digitIndex != -1 && digitIndex < firstIndex {
 				firstIndex = digitIndex
-				firstDigit = digit
+				firstDigit = digit.actual
 			}
 			if digitIndex != -1 && digitIndex > lastIndex {
 				lastIndex = digitIndex
-				lastDigit = digit
+				lastDigit = digit.actual
 			}
 
 			// Check word form
@@ -62,11 +66,11 @@ func (d *day01) Part2() (sum int) {
 				if line[i:i+len(word)] == word {
 					if i < firstIndex {
 						firstIndex = i
-						firstDigit = digit
+						firstDigit = digit.actual
 					}
 					if i > lastIndex {
 						lastIndex = i
-						lastDigit = digit
+						lastDigit = digit.actual
 					}
 				}
 			}
