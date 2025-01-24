@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/VBenny42/AoC/2023/golang/embeds"
@@ -18,4 +19,8 @@ func ReadTrimmed(filename string) string {
 	file := Must(embeds.Inputs.ReadFile(filename))
 
 	return strings.Trim(string(file), "\n")
+}
+
+func Atoi(s string) int {
+	return Must(strconv.Atoi(s))
 }
