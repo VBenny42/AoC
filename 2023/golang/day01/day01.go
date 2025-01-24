@@ -3,7 +3,10 @@ package day01
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
+	// "sync"
+	// "sync/atomic"
 
 	"github.com/VBenny42/AoC/2023/golang/utils"
 )
@@ -29,56 +32,58 @@ func (d *day01) Part1() (sum int) {
 }
 
 func (d *day01) Part2() (sum int) {
-	type digit struct {
-		actual int
-		ascii  string
+	digitsMap := map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+		"four":  4,
+		"five":  5,
+		"six":   6,
+		"seven": 7,
+		"eight": 8,
+		"nine":  9,
+		"zero":  0,
+	}
+	for i := 0; i <= 9; i++ {
+		digitsMap[strconv.Itoa(i)] = i
 	}
 
-	digitsMap := map[string]digit{
-		"one":   {1, "1"},
-		"two":   {2, "2"},
-		"three": {3, "3"},
-		"four":  {4, "4"},
-		"five":  {5, "5"},
-		"six":   {6, "6"},
-		"seven": {7, "7"},
-		"eight": {8, "8"},
-		"nine":  {9, "9"},
-	}
+	// Goroutines shave off about 4ms, but I don't think it's worth it
+
+	// var (
+	// 	wg        sync.WaitGroup
+	// 	sumAtomic atomic.Int32
+	// )
+	// wg.Add(len(d.lines))
 
 	for _, line := range d.lines {
+		// go func(line string) {
+		// defer wg.Done()
 		var firstDigit, lastDigit int
-		firstIndex, lastIndex := len(line), -1
 
-		for word, digit := range digitsMap {
-			digitIndex := strings.Index(line, digit.ascii)
-			if digitIndex != -1 && digitIndex < firstIndex {
-				firstIndex = digitIndex
-				firstDigit = digit.actual
-			}
-			if digitIndex != -1 && digitIndex > lastIndex {
-				lastIndex = digitIndex
-				lastDigit = digit.actual
-			}
+		index := 0
 
-			// Check word form
-			for i := 0; i <= len(line)-len(word); i++ {
-				if line[i:i+len(word)] == word {
-					if i < firstIndex {
-						firstIndex = i
-						firstDigit = digit.actual
+		for index < len(line) {
+			for word, digit := range digitsMap {
+				if strings.HasPrefix(line[index:], word) {
+					if firstDigit == 0 {
+						firstDigit = digit
 					}
-					if i > lastIndex {
-						lastIndex = i
-						lastDigit = digit.actual
-					}
+					lastDigit = digit
+					break
 				}
 			}
+			index++
 		}
 
+		// sumAtomic.Add(int32(10*firstDigit + lastDigit))
 		sum += 10*firstDigit + lastDigit
+		// }(line)
 	}
 
+	// wg.Wait()
+
+	// return int(sumAtomic.Load())
 	return
 }
 
