@@ -2,7 +2,6 @@ package day15
 
 import (
 	"fmt"
-	"runtime"
 	"sort"
 
 	"github.com/VBenny42/AoC/2022/golang/utils"
@@ -11,6 +10,7 @@ import (
 type pair struct {
 	sensor utils.Coord
 	beacon utils.Coord
+	bounds int
 }
 
 type day15 struct {
@@ -36,7 +36,7 @@ func manhattanDistance(a, b utils.Coord) int {
 func (p *pair) manhattanSpan(row int) (span, bool) {
 	dy := utils.Abs(p.sensor.Y - row)
 
-	if dx := manhattanDistance(p.sensor, p.beacon) - dy; dx >= 0 {
+	if dx := p.bounds - dy; dx >= 0 {
 		return span{p.sensor.X - dx, p.sensor.X + dx}, true
 	} else {
 		return span{}, false
@@ -86,96 +86,21 @@ func calculateTotalLength(points []kleePoint) int {
 	return totalLength
 }
 
-func (d *day15) findVacantPoint() utils.Coord {
-	beacons := d.beaconsByRow()
+func (p *pair) inExclusionRange(point utils.Coord) bool {
+	return p.bounds >= manhattanDistance(p.sensor, point)
+}
 
-	results := make(chan utils.Coord)
-	failed := make(chan bool)
-
-	numWorkers := runtime.NumCPU()
-
-	for row := range numWorkers {
-		go checkRows(row, numWorkers, d.bounds, d.pairs, beacons, results, failed)
-	}
-
-	for remaining := numWorkers; remaining > 0; {
-		select {
-		case <-failed:
-			remaining--
-		case result := <-results:
-			// Guaranteed to have one vacant point, so return immediately
-			return result
+func (d *day15) notInAnyRange(point utils.Coord) bool {
+	for _, p := range d.pairs {
+		if p.inExclusionRange(point) {
+			return false
 		}
 	}
-
-	return utils.Coord{}
+	return true
 }
 
 func tuningFrequency(c utils.Coord) int {
 	return c.X*4000000 + c.Y
-}
-
-func checkRows(
-	startRow int,
-	step int,
-	bounds int,
-	pairs []pair,
-	beacons map[int][]span,
-	results chan utils.Coord,
-	failed chan bool,
-) {
-	spans := make([]span, 0, len(pairs))
-
-	for row := startRow; row < bounds; row += step {
-		spans := spans[:0]
-
-		if beaconsInRow, ok := beacons[row]; ok {
-			spans = append(spans, beaconsInRow...)
-		}
-
-		for _, p := range pairs {
-			if span, ok := p.manhattanSpan(row); ok {
-				spans = append(spans, span)
-			}
-		}
-
-		sort.Slice(spans, func(i, j int) bool {
-			return spans[i].start < spans[j].start
-		})
-
-		currentSpan := spans[0]
-
-		for _, s := range spans[1:] {
-			if s.start <= currentSpan.end+1 {
-				if s.end > currentSpan.end {
-					currentSpan.end = s.end
-				}
-			} else {
-				// Found a gap
-				results <- utils.Coord{X: currentSpan.end + 1, Y: row}
-				return
-			}
-		}
-	}
-
-	failed <- true
-}
-
-func (d *day15) beaconsByRow() map[int][]span {
-	beacons := make(map[int][]span)
-
-	for _, p := range d.pairs {
-		row := p.beacon.Y
-		beaconSpan := span{p.beacon.X, p.beacon.X}
-
-		if spans, ok := beacons[row]; ok {
-			beacons[row] = append(spans, beaconSpan)
-		} else {
-			beacons[row] = []span{beaconSpan}
-		}
-	}
-
-	return beacons
 }
 
 func (d *day15) Part1() int {
@@ -183,9 +108,59 @@ func (d *day15) Part1() int {
 	return calculateTotalLength(points)
 }
 
+// Borrowed from https://github.com/BuonHobo/advent-of-code/blob/master/2022/15/Alex/second.py
 func (d *day15) Part2() int {
-	vacantPoint := d.findVacantPoint()
-	return tuningFrequency(vacantPoint)
+	type lineEqn struct {
+		// y = mx + c
+		isRising bool
+		c        int
+	}
+
+	lines := make(map[lineEqn]int)
+
+	for _, p := range d.pairs {
+		topRising := lineEqn{true, p.sensor.Y - p.bounds - 1 - p.sensor.X}
+		topFalling := lineEqn{false, p.sensor.Y - p.bounds - 1 + p.sensor.X}
+		bottomRising := lineEqn{true, p.sensor.Y + p.bounds + 1 - p.sensor.X}
+		bottomFalling := lineEqn{false, p.sensor.Y + p.bounds + 1 + p.sensor.X}
+
+		for _, line := range []lineEqn{topRising, topFalling, bottomRising, bottomFalling} {
+			lines[line]++
+		}
+	}
+
+	risingLines := make([]int, 0)
+	fallingLines := make([]int, 0)
+
+	for line, count := range lines {
+		if count > 1 {
+			if !line.isRising {
+				risingLines = append(risingLines, line.c)
+			} else {
+				fallingLines = append(fallingLines, line.c)
+			}
+		}
+	}
+
+	points := make([]utils.Coord, 0)
+
+	for _, rising := range risingLines {
+		for _, falling := range fallingLines {
+			x := (rising - falling) / 2
+			y := x + falling
+			points = append(points, utils.Crd(x, y))
+		}
+	}
+
+	for _, point := range points {
+		if (0 <= point.X && point.X < d.bounds) &&
+			(0 <= point.Y && point.Y < d.bounds) &&
+			d.notInAnyRange(point) {
+			return tuningFrequency(point)
+		}
+	}
+
+	return -1
 }
 
 func Parse(filename string, rowToCheck, bounds int) *day15 {
@@ -196,6 +171,7 @@ func Parse(filename string, rowToCheck, bounds int) *day15 {
 	for i, line := range data {
 		fmt.Sscanf(line, "Sensor at x=%d, y=%d: closest beacon is at x=%d, y=%d",
 			&pairs[i].sensor.X, &pairs[i].sensor.Y, &pairs[i].beacon.X, &pairs[i].beacon.Y)
+		pairs[i].bounds = manhattanDistance(pairs[i].sensor, pairs[i].beacon)
 	}
 
 	return &day15{pairs, rowToCheck, bounds}
