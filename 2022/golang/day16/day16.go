@@ -47,6 +47,7 @@ func (d *day16) travellingSalesman(
 		return memo[openValves]
 	}
 	memo[openValves] = pressureReleased
+
 	// NOTE: This is an optimization to avoid recalculating the same state
 	// Works on actual input, but fails on test input.
 	// To make test pass, make the following change:
@@ -134,12 +135,20 @@ func (d *day16) Part2() int {
 
 	_, memo := d.simulate(&graph, startingMask, startingIndex, 26)
 
+	masks := make([]uint64, 0, len(memo))
+	flows := make([]int, 0, len(memo))
+
+	for mask, flow := range memo {
+		masks = append(masks, mask)
+		flows = append(flows, flow)
+	}
+
 	maxPressureReleased := 0
 
-	for personMask, personFlow := range memo {
-		for elephantMask, elephantFlow := range memo {
-			if (^personMask)&(^elephantMask)&startingMask == 0 {
-				maxPressureReleased = max(maxPressureReleased, personFlow+elephantFlow)
+	for person := 0; person < len(masks); person++ {
+		for elephant := 0; elephant < len(masks); elephant++ {
+			if (^masks[person])&(^masks[elephant])&startingMask == 0 {
+				maxPressureReleased = max(maxPressureReleased, flows[person]+flows[elephant])
 			}
 		}
 	}

@@ -40,10 +40,6 @@ func (d *day16) findValve(name string) int {
 	return n
 }
 
-func (d *day16) addValve(v valve) {
-	d.valves[v.index] = v
-}
-
 func Parse(filename string) *day16 {
 	data := utils.ReadLines(filename)
 
@@ -68,7 +64,7 @@ func Parse(filename string) *day16 {
 		for _, tunnel := range split {
 			v.tunnels = append(v.tunnels, day.findValve(tunnel))
 		}
-		day.addValve(v)
+		day.valves[v.index] = v
 	}
 
 	return &day
