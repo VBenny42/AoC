@@ -82,7 +82,7 @@ func Parse(filename string) *day02 {
 			values := strings.Split(sampleString, ", ")
 
 			for _, value := range values {
-				numberAndColor := strings.Split(value, " ")
+				numberAndColor := strings.Fields(value)
 				if len(numberAndColor) != 2 {
 					panic("Invalid number and color")
 				}
