@@ -10,11 +10,7 @@ import (
 func TestPart1(t *testing.T) {
 	d := day11.Parse("inputs/day11/sample-input.txt")
 
-	assert.Equal(t, 374, d.Part1())
-}
+	val, _ := d.Part1And2()
 
-// func TestPart2(t *testing.T) {
-// 	d := day11.Parse("inputs/day11/sample-input.txt")
-//
-// 	assert.Equal(t, 0, d.Part2())
-// }
+	assert.Equal(t, 374, val)
+}

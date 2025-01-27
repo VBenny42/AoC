@@ -7,7 +7,10 @@ import (
 	"gonum.org/v1/gonum/stat/combin"
 )
 
-type grid [][]int
+type (
+	cell int
+	grid [][]cell
+)
 
 type day11 struct {
 	grid     grid
@@ -15,19 +18,20 @@ type day11 struct {
 }
 
 const (
-	galaxy = 1
-	empty  = 0
+	empty cell = iota
+	galaxy
+	expansion
 )
 
-func (d *day11) Part1() (sum int) {
+func (d *day11) Part1And2() (part1, part2 int) {
 	var (
 		combinations = make([]int, 2)
 		gen          = combin.NewCombinationGenerator(len(d.galaxies), 2)
-		memo         = map[utils.Coord]map[utils.Coord]int{}
+		memo         = map[utils.Coord]map[utils.Coord]stepWithExpansion{}
 	)
 
 	for _, galaxy := range d.galaxies {
-		memo[galaxy] = map[utils.Coord]int{}
+		memo[galaxy] = map[utils.Coord]stepWithExpansion{}
 	}
 
 	for gen.Next() {
@@ -40,7 +44,8 @@ func (d *day11) Part1() (sum int) {
 			return
 		}
 
-		sum += steps
+		part1 += steps.actual + (steps.expansions * 2)
+		part2 += steps.actual + (steps.expansions * 1000000)
 	}
 	return
 }
@@ -50,7 +55,7 @@ func Parse(filename string) *day11 {
 
 	grid := make(grid, len(data))
 	for i, line := range data {
-		grid[i] = make([]int, len(line))
+		grid[i] = make([]cell, len(line))
 		for j, char := range line {
 			if char == '#' {
 				grid[i][j] = galaxy
@@ -63,7 +68,7 @@ func Parse(filename string) *day11 {
 	expandedGrid := grid.expand()
 	galaxies := []utils.Coord{}
 
-	for y, row := range expandedGrid {
+	for y, row := range grid {
 		for x, cell := range row {
 			if cell == galaxy {
 				galaxies = append(galaxies, utils.Crd(x, y))
@@ -79,7 +84,9 @@ func Parse(filename string) *day11 {
 
 func Solve(filename string) {
 	day := Parse(filename)
-	// day := Parse("inputs/day11/sample-input.txt")
 
-	fmt.Println("ANSWER1: sum of shortest path between each pair of galaxies:", day.Part1())
+	part1, part2 := day.Part1And2()
+
+	fmt.Println("ANSWER1: sum of shortest path between each pair of galaxies:", part1)
+	fmt.Println("ANSWER2: sum of shortest path between each pair of galaxies with 1000000 expansions:", part2)
 }
