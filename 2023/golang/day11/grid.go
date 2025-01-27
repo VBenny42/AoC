@@ -92,9 +92,9 @@ func (g *grid) bfs(start, end utils.Coord, memo map[utils.Coord]map[utils.Coord]
 			if g.inBounds(next) {
 				stepsVal := curr.steps
 				if (*g)[next.Y][next.X] > galaxy {
-					stepsVal = stepWithExpansion{stepsVal.actual, stepsVal.expansions + 1}
+					stepsVal.expansions++
 				} else {
-					stepsVal = stepWithExpansion{stepsVal.actual + 1, stepsVal.expansions}
+					stepsVal.actual++
 				}
 				queue = append(queue, node{next, stepsVal})
 			}

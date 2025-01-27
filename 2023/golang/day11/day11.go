@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/VBenny42/AoC/2023/golang/utils"
-	"gonum.org/v1/gonum/stat/combin"
 )
 
 type (
@@ -25,27 +24,39 @@ const (
 
 func (d *day11) Part1And2() (part1, part2 int) {
 	var (
-		combinations = make([]int, 2)
-		gen          = combin.NewCombinationGenerator(len(d.galaxies), 2)
-		memo         = map[utils.Coord]map[utils.Coord]stepWithExpansion{}
+		memo = map[utils.Coord]map[utils.Coord]stepWithExpansion{}
+		seen = map[[2]utils.Coord]bool{}
 	)
 
 	for _, galaxy := range d.galaxies {
 		memo[galaxy] = map[utils.Coord]stepWithExpansion{}
 	}
 
-	for gen.Next() {
-		gen.Combination(combinations)
+	for _, start := range d.galaxies {
+		for _, end := range d.galaxies {
+			if start == end {
+				continue
+			}
 
-		steps, err := d.grid.bfs(d.galaxies[combinations[0]], d.galaxies[combinations[1]], memo)
-		if err != nil {
-			fmt.Println(err)
-			fmt.Println(combinations)
-			return
+			first, second := start, end
+			if start.X > end.X || (start.X == end.X && start.Y > end.Y) {
+				first, second = end, start
+			}
+
+			if seen[[2]utils.Coord{first, second}] {
+				continue
+			}
+			seen[[2]utils.Coord{first, second}] = true
+
+			steps, err := d.grid.bfs(first, second, memo)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			part1 += steps.actual + (steps.expansions * 2)
+			part2 += steps.actual + (steps.expansions * 1000000)
 		}
-
-		part1 += steps.actual + (steps.expansions * 2)
-		part2 += steps.actual + (steps.expansions * 1000000)
 	}
 	return
 }
