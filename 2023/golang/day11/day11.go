@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/VBenny42/AoC/2023/golang/utils"
+	"gonum.org/v1/gonum/stat/combin"
 )
 
 type (
@@ -12,84 +13,86 @@ type (
 )
 
 type day11 struct {
-	grid     grid
-	galaxies []utils.Coord
+	galaxies      []utils.Coord
+	expansionRows []int
+	expansionCols []int
 }
 
 const (
 	empty cell = iota
 	galaxy
-	expansion
 )
 
-func (d *day11) Part1And2() (part1, part2 int) {
-	var (
-		memo = map[utils.Coord]map[utils.Coord]stepWithExpansion{}
-		seen = map[[2]utils.Coord]bool{}
-	)
+func manhattanDistance(a, b utils.Coord) int {
+	return utils.Abs(a.X-b.X) + utils.Abs(a.Y-b.Y)
+}
 
-	for _, galaxy := range d.galaxies {
-		memo[galaxy] = map[utils.Coord]stepWithExpansion{}
-	}
+func (d *day11) expandCoord(coord utils.Coord, factor int) utils.Coord {
+	var row, col int
 
-	for _, start := range d.galaxies {
-		for _, end := range d.galaxies {
-			if start == end {
-				continue
-			}
-
-			first, second := start, end
-			if start.X > end.X || (start.X == end.X && start.Y > end.Y) {
-				first, second = end, start
-			}
-
-			if seen[[2]utils.Coord{first, second}] {
-				continue
-			}
-			seen[[2]utils.Coord{first, second}] = true
-
-			steps, err := d.grid.bfs(first, second, memo)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			part1 += steps.actual + (steps.expansions * 2)
-			part2 += steps.actual + (steps.expansions * 1000000)
+	for _, r := range d.expansionRows {
+		if r < coord.Y {
+			row++
 		}
 	}
+
+	for _, c := range d.expansionCols {
+		if c < coord.X {
+			col++
+		}
+	}
+
+	return utils.Crd(coord.X+(col*factor), coord.Y+(row*factor))
+}
+
+func (d *day11) Part1And2() (part1, part2 int) {
+	combinations := make([]int, 2)
+	gen := combin.NewCombinationGenerator(len(d.galaxies), 2)
+
+	for gen.Next() {
+		gen.Combination(combinations)
+
+		first, second := d.galaxies[combinations[0]], d.galaxies[combinations[1]]
+
+		// firstRow, firstCol := d.expandCoord(first)
+		// secondRow, secondCol := d.expandCoord(second)
+
+		part1 += manhattanDistance(
+			d.expandCoord(first, 2-1),
+			d.expandCoord(second, 2-1),
+		)
+		part2 += manhattanDistance(
+			d.expandCoord(first, 1000000-1),
+			d.expandCoord(second, 1000000-1),
+		)
+	}
+
 	return
 }
 
 func Parse(filename string) *day11 {
 	data := utils.ReadLines(filename)
-
-	grid := make(grid, len(data))
-	for i, line := range data {
-		grid[i] = make([]cell, len(line))
-		for j, char := range line {
-			if char == '#' {
-				grid[i][j] = galaxy
-			} else {
-				grid[i][j] = empty
-			}
-		}
-	}
-
-	expandedGrid := grid.expand()
 	galaxies := []utils.Coord{}
 
-	for y, row := range grid {
-		for x, cell := range row {
-			if cell == galaxy {
+	grid := make(grid, len(data))
+	for y, line := range data {
+		grid[y] = make([]cell, len(line))
+		for x, char := range line {
+			if char == '#' {
+				grid[y][x] = galaxy
 				galaxies = append(galaxies, utils.Crd(x, y))
+			} else {
+				grid[y][x] = empty
 			}
 		}
 	}
 
+	rows, cols := grid.expansionRowsAndCols()
+
 	return &day11{
-		grid:     expandedGrid,
-		galaxies: galaxies,
+		galaxies:      galaxies,
+		expansionRows: rows,
+		expansionCols: cols,
 	}
 }
 

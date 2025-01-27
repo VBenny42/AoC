@@ -14,8 +14,6 @@ func (g grid) String() string {
 				builder.WriteRune('#')
 			case empty:
 				builder.WriteRune('.')
-			case expansion:
-				builder.WriteRune('E')
 			}
 		}
 		builder.WriteString("\n")
