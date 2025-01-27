@@ -27,7 +27,7 @@ func manhattanDistance(a, b utils.Coord) int {
 	return utils.Abs(a.X-b.X) + utils.Abs(a.Y-b.Y)
 }
 
-func (d *day11) expandCoord(coord utils.Coord, factor int) utils.Coord {
+func (d *day11) expandCoord(coord utils.Coord) func(int) utils.Coord {
 	var row, col int
 
 	for _, r := range d.expansionRows {
@@ -42,7 +42,9 @@ func (d *day11) expandCoord(coord utils.Coord, factor int) utils.Coord {
 		}
 	}
 
-	return utils.Crd(coord.X+(col*factor), coord.Y+(row*factor))
+	return func(factor int) utils.Coord {
+		return utils.Crd(coord.X+(col*factor), coord.Y+(row*factor))
+	}
 }
 
 func (d *day11) Part1And2() (part1, part2 int) {
@@ -54,16 +56,23 @@ func (d *day11) Part1And2() (part1, part2 int) {
 
 		first, second := d.galaxies[combinations[0]], d.galaxies[combinations[1]]
 
-		// firstRow, firstCol := d.expandCoord(first)
-		// secondRow, secondCol := d.expandCoord(second)
+		factor := 2 - 1
+
+		var (
+			firstExpanded  = d.expandCoord(first)
+			secondExpanded = d.expandCoord(second)
+		)
 
 		part1 += manhattanDistance(
-			d.expandCoord(first, 2-1),
-			d.expandCoord(second, 2-1),
+			firstExpanded(factor),
+			secondExpanded(factor),
 		)
+
+		factor = 1000000 - 1
+
 		part2 += manhattanDistance(
-			d.expandCoord(first, 1000000-1),
-			d.expandCoord(second, 1000000-1),
+			firstExpanded(factor),
+			secondExpanded(factor),
 		)
 	}
 
@@ -81,8 +90,6 @@ func Parse(filename string) *day11 {
 			if char == '#' {
 				grid[y][x] = galaxy
 				galaxies = append(galaxies, utils.Crd(x, y))
-			} else {
-				grid[y][x] = empty
 			}
 		}
 	}
