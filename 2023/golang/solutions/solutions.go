@@ -14,7 +14,7 @@ import (
 	"github.com/VBenny42/AoC/2023/golang/day09"
 	"github.com/VBenny42/AoC/2023/golang/day10"
 	"github.com/VBenny42/AoC/2023/golang/day11"
-	// "github.com/VBenny42/AoC/2023/golang/day12"
+	"github.com/VBenny42/AoC/2023/golang/day12"
 	// "github.com/VBenny42/AoC/2023/golang/day13"
 	// "github.com/VBenny42/AoC/2023/golang/day14"
 	// "github.com/VBenny42/AoC/2023/golang/day15"
@@ -32,7 +32,7 @@ import (
 
 const (
 	ValidStart = 1
-	ValidEnd   = 11
+	ValidEnd   = 12
 )
 
 var days = map[int]func(){
@@ -47,7 +47,7 @@ var days = map[int]func(){
 	9:  func() { day09.Solve("inputs/day09/input.txt") },
 	10: func() { day10.Solve("inputs/day10/input.txt") },
 	11: func() { day11.Solve("inputs/day11/input.txt") },
-	// 12: func() { day12.Solve("inputs/day12/input.txt") },
+	12: func() { day12.Solve("inputs/day12/input.txt") },
 	// 13: func() { day13.Solve("inputs/day13/input.txt") },
 	// 14: func() { day14.Solve("inputs/day14/input.txt") },
 	// 15: func() { day15.Solve("inputs/day15/input.txt") },
