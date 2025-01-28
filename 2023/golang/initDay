@@ -36,3 +36,5 @@ gofmt -w solutions/solutions.go
 
 echo "Template created at  $dayTestFile"
 echo "Solutions file updated"
+
+./getSampleInput $1

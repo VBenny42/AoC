@@ -50,7 +50,7 @@ func possibleArrangements(r row) (possible int) {
 			// Adding damaged spring to a group
 			case (spring == damaged || spring == unknown) &&
 				temp.groupIdx < len(r.groups) &&
-				temp.wantWorkingSpring == false:
+				!temp.wantWorkingSpring:
 
 				if spring == unknown && temp.groupSize == 0 {
 					tempStates[curr] += count
