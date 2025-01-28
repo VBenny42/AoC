@@ -26,4 +26,13 @@ dayTestFile=$(printf "%s/%s_test.go" "$dayDir" "$dayDir")
 
 cat template_test.go.template | sed "s/template/$dayDir/g" > "$dayTestFile"
 
+cat solutions/solutions.go | sed "/\/\/.*$dayDir/s/^[[:space:]]*\/\/[[:space:]]*//g" > solutions/solutions.go.tmp
+mv solutions/solutions.go.tmp solutions/solutions.go
+
+cat solutions/solutions.go | sed "/^[[:space:]]*ValidEnd/s/=[[:space:]]*[0-9]*/= $1/" > solutions/solutions.go.tmp
+mv solutions/solutions.go.tmp solutions/solutions.go
+
+gofmt -w solutions/solutions.go
+
 echo "Template created at  $dayTestFile"
+echo "Solutions file updated"
