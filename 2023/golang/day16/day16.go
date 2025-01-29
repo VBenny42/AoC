@@ -2,6 +2,7 @@ package day16
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/VBenny42/AoC/2023/golang/utils"
 )
@@ -15,9 +16,9 @@ type day16 struct {
 	grid grid
 }
 
+const empty cell = 0
 const (
-	empty cell = iota
-	vSplit
+	vSplit cell = 1 << iota
 	hSplit
 	rightMirror
 	leftMirror
@@ -40,16 +41,20 @@ type state struct {
 	dir utils.Coord
 }
 
-func (d *day16) simulateBeams(start state, visited map[state]struct{}, energized map[utils.Coord]struct{}) int {
-	clear(visited)
-	clear(energized)
-	queue := []state{start}
+func (d *day16) simulateBeams(start state) int {
+	var (
+		queue     = []state{start}
+		visited   = make(map[state]struct{})
+		energized = make(map[utils.Coord]struct{})
+	)
 
 	for len(queue) > 0 {
 		curr := queue[0]
 		queue = queue[1:]
 
 		if _, ok := visited[curr]; ok {
+			// Remove beam if it's already been visited
+			// Loop will happen otherwise
 			continue
 		}
 		visited[curr] = struct{}{}
@@ -62,41 +67,43 @@ func (d *day16) simulateBeams(start state, visited map[state]struct{}, energized
 		var nextDirs []utils.Coord
 
 		switch {
-		case cellType&(1<<empty) != 0:
+		case cellType == empty:
 			nextDirs = []utils.Coord{curr.dir}
-		case cellType&(1<<vSplit) != 0:
+		case cellType&vSplit != 0:
 			if curr.dir == utils.Up || curr.dir == utils.Down {
-				nextDirs = append(nextDirs, curr.dir)
+				// Treat like an empty cell
+				nextDirs = []utils.Coord{curr.dir}
 			} else {
-				nextDirs = append(nextDirs, utils.Up, utils.Down)
+				nextDirs = []utils.Coord{utils.Up, utils.Down}
 			}
-		case cellType&(1<<hSplit) != 0:
+		case cellType&hSplit != 0:
 			if curr.dir == utils.Left || curr.dir == utils.Right {
-				nextDirs = append(nextDirs, curr.dir)
+				// Treat like an empty cell
+				nextDirs = []utils.Coord{curr.dir}
 			} else {
-				nextDirs = append(nextDirs, utils.Left, utils.Right)
+				nextDirs = []utils.Coord{utils.Left, utils.Right}
 			}
-		case cellType&(1<<rightMirror) != 0:
+		case cellType&rightMirror != 0:
 			switch curr.dir {
 			case utils.Right:
-				nextDirs = append(nextDirs, utils.Up)
+				nextDirs = []utils.Coord{utils.Up}
 			case utils.Left:
-				nextDirs = append(nextDirs, utils.Down)
+				nextDirs = []utils.Coord{utils.Down}
 			case utils.Up:
-				nextDirs = append(nextDirs, utils.Right)
+				nextDirs = []utils.Coord{utils.Right}
 			case utils.Down:
-				nextDirs = append(nextDirs, utils.Left)
+				nextDirs = []utils.Coord{utils.Left}
 			}
-		case cellType&(1<<leftMirror) != 0:
+		case cellType&leftMirror != 0:
 			switch curr.dir {
 			case utils.Right:
-				nextDirs = append(nextDirs, utils.Down)
+				nextDirs = []utils.Coord{utils.Down}
 			case utils.Left:
-				nextDirs = append(nextDirs, utils.Up)
+				nextDirs = []utils.Coord{utils.Up}
 			case utils.Up:
-				nextDirs = append(nextDirs, utils.Left)
+				nextDirs = []utils.Coord{utils.Left}
 			case utils.Down:
-				nextDirs = append(nextDirs, utils.Right)
+				nextDirs = []utils.Coord{utils.Right}
 			}
 		}
 
@@ -116,46 +123,59 @@ func (d *day16) simulateBeams(start state, visited map[state]struct{}, energized
 func (d *day16) Part1() int {
 	return d.simulateBeams(
 		state{pos: utils.Coord{X: 0, Y: 0}, dir: utils.Right},
-		make(map[state]struct{}),
-		make(map[utils.Coord]struct{}),
 	)
 }
 
 func (d *day16) Part2() int {
+	var maxEnergized int
+
 	var (
-		maxEnergized int
-		energized    int
-		visited      = make(map[state]struct{})
-		energizedMap = make(map[utils.Coord]struct{})
+		wg          sync.WaitGroup
+		energizedCh = make(chan int)
 	)
 
+	var (
+		rowLen = len(d.grid[0]) - 1
+		colLen = len(d.grid) - 1
+	)
 	for x := 0; x < len(d.grid[0]); x++ {
-		energized = d.simulateBeams(
-			state{pos: utils.Coord{X: x, Y: 0}, dir: utils.Down},
-			visited,
-			energizedMap,
-		)
-		maxEnergized = max(maxEnergized, energized)
-		energized = d.simulateBeams(
-			state{pos: utils.Coord{X: x, Y: len(d.grid) - 1}, dir: utils.Up},
-			visited,
-			energizedMap,
-		)
-		maxEnergized = max(maxEnergized, energized)
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			energizedCh <- d.simulateBeams(
+				state{pos: utils.Crd(x, 0), dir: utils.Down},
+			)
+		}()
+		go func() {
+			defer wg.Done()
+			energizedCh <- d.simulateBeams(
+				state{pos: utils.Crd(x, colLen), dir: utils.Down},
+			)
+		}()
 	}
 
 	for y := 0; y < len(d.grid); y++ {
-		energized = d.simulateBeams(
-			state{pos: utils.Coord{X: 0, Y: y}, dir: utils.Right},
-			visited,
-			energizedMap,
-		)
-		maxEnergized = max(maxEnergized, energized)
-		energized = d.simulateBeams(
-			state{pos: utils.Coord{X: len(d.grid[0]) - 1, Y: y}, dir: utils.Left},
-			visited,
-			energizedMap,
-		)
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			energizedCh <- d.simulateBeams(
+				state{pos: utils.Crd(0, y), dir: utils.Right},
+			)
+		}()
+		go func() {
+			defer wg.Done()
+			energizedCh <- d.simulateBeams(
+				state{pos: utils.Crd(rowLen, y), dir: utils.Left},
+			)
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(energizedCh)
+	}()
+
+	for energized := range energizedCh {
 		maxEnergized = max(maxEnergized, energized)
 	}
 
@@ -173,7 +193,7 @@ func Parse(filename string) *day16 {
 			if !ok {
 				panic("invalid rune")
 			}
-			grid[y][x] = 1 << val
+			grid[y][x] = val
 		}
 	}
 

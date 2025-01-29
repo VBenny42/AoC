@@ -16,15 +16,7 @@ func (g grid) String() string {
 				builder.WriteRune('/')
 			case cell&(1<<leftMirror) != 0:
 				builder.WriteRune('\\')
-			// case cell&(1<<up)&(1<<empty) != 0:
-			// 	builder.WriteRune('^')
-			// case cell&(1<<down)&(1<<empty) != 0:
-			// 	builder.WriteRune('v')
-			// case cell&(1<<left)&(1<<empty) != 0:
-			// 	builder.WriteRune('<')
-			// case cell&(1<<right)&(1<<empty) != 0:
-			// 	builder.WriteRune('>')
-			case cell&(1<<empty) != 0:
+			case cell == 0:
 				builder.WriteRune('.')
 			default:
 				builder.WriteRune('?')
