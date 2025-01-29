@@ -1,6 +1,7 @@
 package template_test
 
 import (
+  "os"
 	"testing"
 
 	"github.com/VBenny42/AoC/2023/golang/template"
