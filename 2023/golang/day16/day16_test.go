@@ -1,16 +1,17 @@
-package template_test
+package day16_test
 
 import (
-  "os"
+	"os"
 	"testing"
 
-	"github.com/VBenny42/AoC/2023/golang/template"
+	"github.com/VBenny42/AoC/2023/golang/day16"
 )
 
 func ExampleSolve() {
-	template.Solve("inputs/template/sample-input.txt")
-  // Output:
-  // ANSWER1: <answer1>
+	day16.Solve("inputs/day16/sample-input.txt")
+	// Output:
+	// ANSWER1: number of energized tiles: 46
+	// ANSWER2: max number of energized tiles possible: 51
 }
 
 func BenchmarkSolve(b *testing.B) {
@@ -28,9 +29,9 @@ func BenchmarkSolve(b *testing.B) {
 		null.Close()
 	}()
 
-  b.ResetTimer()
+	b.ResetTimer()
 
 	for range b.N {
-		template.Solve("inputs/template/input.txt")
+		day16.Solve("inputs/day16/input.txt")
 	}
 }
