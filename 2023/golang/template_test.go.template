@@ -5,20 +5,13 @@ import (
 	"testing"
 
 	"github.com/VBenny42/AoC/2023/golang/template"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestPart1(t *testing.T) {
-	d := template.Parse("inputs/template/sample-input.txt")
-
-	assert.Equal(t, 0, d.Part1())
+func ExampleSolve(t *testing.T) {
+	template.Solve("inputs/template/sample-input.txt")
+  // Output:
+  // ANSWER1: <answer1>
 }
-
-// func TestPart2(t *testing.T) {
-// 	d := template.Parse("inputs/template/sample-input.txt")
-//
-// 	assert.Equal(t, 0, d.Part2())
-// }
 
 func BenchmarkSolve(b *testing.B) {
 	// b.ReportAllocs()
