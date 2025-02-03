@@ -13,12 +13,18 @@ import (
 )
 
 func main() {
-	validString := fmt.Sprintf("Valid values are %d-%d", solutions.ValidStart, solutions.ValidEnd)
-	day := flag.Int("day", 0, validString)
-	all := flag.Bool("all", false, "Run all days")
-	help := flag.Bool("help", false, "Show help")
-	profile := flag.String("profile", "", "Write profile to file")
-	shouldTime := flag.Bool("time", false, "Time the solution")
+	var (
+		validString = fmt.Sprintf(
+			"Valid values are %d-%d",
+			solutions.ValidStart,
+			solutions.ValidEnd,
+		)
+		day        = flag.Int("day", 0, validString)
+		all        = flag.Bool("all", false, "Run all days")
+		help       = flag.Bool("help", false, "Show help")
+		profile    = flag.String("profile", "", "Write profile to file")
+		shouldTime = flag.Bool("time", false, "Time the solution")
+	)
 
 	flag.Parse()
 
