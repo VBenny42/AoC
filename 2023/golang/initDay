@@ -25,6 +25,7 @@ dayDir=$(printf "day%02d" "$1")
 dayTestFile=$(printf "%s/%s_test.go" "$dayDir" "$dayDir")
 
 cat template_test.go.template | sed "s/template/$dayDir/g" > "$dayTestFile"
+go fmt -w "$dayTestFile"
 
 cat solutions/solutions.go | sed "/\/\/.*$dayDir/s/^[[:space:]]*\/\/[[:space:]]*//g" > solutions/solutions.go.tmp
 mv solutions/solutions.go.tmp solutions/solutions.go
