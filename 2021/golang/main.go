@@ -1,4 +1,4 @@
-// Package AoC_go is a simple command line tool to run Advent of Code 2021 solutions
+// Package golang is a simple command line tool to run Advent of Code 2021 solutions
 // Author: Vinesh Benny
 package main
 
@@ -22,7 +22,7 @@ func main() {
 		day        = flag.Int("day", 0, validString)
 		all        = flag.Bool("all", false, "Run all days")
 		help       = flag.Bool("help", false, "Show help")
-		profile    = flag.String("profile", "", "Write profile to file")
+		profile    = flag.String("profile", "", "Write profile to `file`")
 		shouldTime = flag.Bool("time", false, "Time the solution")
 	)
 
