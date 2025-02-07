@@ -1,16 +1,17 @@
-package template_test
+package day06_test
 
 import (
-  "os"
+	"os"
 	"testing"
 
-	"github.com/VBenny42/AoC/2021/golang/template"
+	"github.com/VBenny42/AoC/2021/golang/day06"
 )
 
 func ExampleSolve() {
-	template.Solve("inputs/template/sample-input.txt")
-  // Output:
-  // ANSWER1: <answer1>:
+	day06.Solve("inputs/day06/sample-input.txt")
+	// Output:
+	// ANSWER1: number of lanternfish after 80 days: 5934
+	// ANSWER2: number of lanternfish after 256 days: 26984457539
 }
 
 func BenchmarkSolve(b *testing.B) {
@@ -28,9 +29,9 @@ func BenchmarkSolve(b *testing.B) {
 		null.Close()
 	}()
 
-  b.ResetTimer()
+	b.ResetTimer()
 
 	for range b.N {
-		template.Solve("inputs/template/input.txt")
+		day06.Solve("inputs/day06/input.txt")
 	}
 }
