@@ -30,12 +30,15 @@ func (d *day07) Part1() (sum int) {
 // Need to move to mean now
 func (d *day07) Part2() int {
 	var total int
+
 	for _, crab := range d.crabs {
 		total += crab
 	}
 
-	mean1 := (total - len(d.crabs)/2) / len(d.crabs)
-	mean2 := (total + len(d.crabs)/2) / len(d.crabs)
+	var (
+		floor = (total - len(d.crabs)/2) / len(d.crabs)
+		ceil  = (total + len(d.crabs)/2) / len(d.crabs)
+	)
 
 	distanceToVal := func(val int) (sum int) {
 		for _, crab := range d.crabs {
@@ -48,10 +51,7 @@ func (d *day07) Part2() int {
 		return
 	}
 
-	distance1 := distanceToVal(mean1)
-	distance2 := distanceToVal(mean2)
-
-	return min(distance1, distance2)
+	return min(distanceToVal(floor), distanceToVal(ceil))
 }
 
 func Parse(filename string) *day07 {
