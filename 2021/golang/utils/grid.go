@@ -16,7 +16,22 @@ func (g *Grid[T]) Get(p image.Point) T {
 	return (*g)[p.Y][p.X]
 }
 
-func (g *Grid[T]) inBounds(p image.Point) bool {
+func (g *Grid[T]) Set(p image.Point, val T) {
+	(*g)[p.Y][p.X] = val
+}
+
+func (g *Grid[T]) InBounds(p image.Point) bool {
 	return p.X >= 0 && p.X < len((*g)[0]) &&
 		p.Y >= 0 && p.Y < len((*g))
+}
+
+func (g *Grid[T]) GetNeighbors(p image.Point) (neighbors []image.Point) {
+	for _, d := range Directions {
+		neighbor := p.Add(d)
+		if g.InBounds(neighbor) {
+			neighbors = append(neighbors, neighbor)
+		}
+	}
+
+	return
 }
