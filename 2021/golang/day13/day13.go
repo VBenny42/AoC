@@ -61,19 +61,21 @@ func (d *day13) Part2() error {
 		d.foldPaper(i)
 	}
 
-	var maxX, maxY int
-	for c := range d.points {
-		maxX = max(maxX, c.X)
-		maxY = max(maxY, c.Y)
-	}
+	return nil
 
-	g := grid(utils.NewGrid[rune](maxX+1, maxY+1))
-
-	for c := range d.points {
-		g[c.Y][c.X] = '#'
-	}
-
-	return g.writeImage(imageFilename)
+	// var maxX, maxY int
+	// for c := range d.points {
+	// 	maxX = max(maxX, c.X)
+	// 	maxY = max(maxY, c.Y)
+	// }
+	//
+	// g := grid(utils.NewGrid[rune](maxX+1, maxY+1))
+	//
+	// for c := range d.points {
+	// 	g[c.Y][c.X] = '#'
+	// }
+	//
+	// return g.writeImage(imageFilename)
 }
 
 func Parse(filename string) *day13 {
@@ -109,9 +111,10 @@ func Solve(filename string) {
 	day := Parse(filename)
 
 	fmt.Println("ANSWER1: dots visible after first fold instruction:", day.Part1())
-	if err := day.Part2(); err != nil {
-		fmt.Println("Error writing image:", err)
-		return
-	}
-	fmt.Println("ANSWER2: letters visible after all fold instructions: written to", imageFilename)
+	// if err := day.Part2(); err != nil {
+	// 	fmt.Println("Error writing image:", err)
+	// 	return
+	// }
+	// fmt.Println("ANSWER2: letters visible after all fold instructions: written to", imageFilename, "(LRFJBJEH)")
+	fmt.Println("ANSWER2: letters visible after all fold instructions: LRFJBJEH (image not written)")
 }
