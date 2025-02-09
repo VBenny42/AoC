@@ -27,11 +27,6 @@ func (s Set[T]) Contains(value T) bool {
 	return ok
 }
 
-// Len returns the number of elements in the set.
-func (s Set[T]) Len() int {
-	return len(s)
-}
-
 // Values returns a slice of all the values in the set.
 func (s Set[T]) Values() []T {
 	values := make([]T, 0, len(s))
