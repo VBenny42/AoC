@@ -35,3 +35,12 @@ func (s Set[T]) Values() []T {
 	}
 	return values
 }
+
+// Clone returns a copy of the set.
+func (s Set[T]) Clone() Set[T] {
+	clone := make(Set[T], len(s))
+	for v := range s {
+		clone[v] = struct{}{}
+	}
+	return clone
+}

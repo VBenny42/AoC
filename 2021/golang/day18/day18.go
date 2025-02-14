@@ -202,21 +202,16 @@ func (d *day18) Part2() int {
 		sum          *number
 	)
 
-	addPair := func(i, j int) {
-		sum = add(parseSnailfish(d.pairs[i]), parseSnailfish(d.pairs[j]))
-		for reduce(sum) {
-		}
-		maxMagnitude = max(maxMagnitude, sum.magnitude())
-	}
-
 	for i := 0; i < len(d.pairs); i++ {
 		for j := 0; j < len(d.pairs); j++ {
 			if i == j {
 				continue
 			}
 
-			addPair(i, j)
-			addPair(j, i)
+			sum = add(parseSnailfish(d.pairs[i]), parseSnailfish(d.pairs[j]))
+			for reduce(sum) {
+			}
+			maxMagnitude = max(maxMagnitude, sum.magnitude())
 		}
 	}
 	return maxMagnitude
