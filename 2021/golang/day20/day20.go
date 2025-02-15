@@ -123,4 +123,8 @@ func Solve(filename string) {
 
 	fmt.Println("ANSWER1: number of tiles lit in the resulting image:", day.Part1())
 	fmt.Println("ANSWER2: number of tiles lit after 50 enhancements:", day.Part2())
+
+	// if err := imageGrid(day.grid).writeImage("day20.png"); err != nil {
+	// 	fmt.Println("Error writing image:", err)
+	// }
 }
