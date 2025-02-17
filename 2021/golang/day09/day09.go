@@ -19,7 +19,7 @@ func (d *day09) Part1() (sum int) {
 			pt := image.Pt(x, y)
 
 			higherThanNeighbors := false
-			for _, neighbor := range d.grid.GetNeighbors(pt) {
+			for _, neighbor := range d.grid.Neighbors(pt) {
 				if cell >= d.grid.Get(neighbor) {
 					higherThanNeighbors = true
 					break
@@ -64,7 +64,7 @@ func (d *day09) Part2() int {
 			visited.Set(curr, true)
 			size++
 
-			for _, neighbor := range d.grid.GetNeighbors(curr) {
+			for _, neighbor := range d.grid.Neighbors(curr) {
 				if d.grid.Get(neighbor) == 9 {
 					continue
 				}

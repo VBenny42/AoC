@@ -25,7 +25,7 @@ func (g *Grid[T]) InBounds(p image.Point) bool {
 		p.Y >= 0 && p.Y < len((*g))
 }
 
-func (g *Grid[T]) GetNeighbors(p image.Point) (neighbors []image.Point) {
+func (g *Grid[T]) Neighbors(p image.Point) (neighbors []image.Point) {
 	for _, d := range Directions {
 		neighbor := p.Add(d)
 		if g.InBounds(neighbor) {
