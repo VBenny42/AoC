@@ -35,3 +35,11 @@ func (g *Grid[T]) Neighbors(p image.Point) (neighbors []image.Point) {
 
 	return
 }
+
+func (g *Grid[T]) Clone() Grid[T] {
+	clone := NewGrid[T](len((*g)[0]), len((*g)))
+	for y := range *g {
+		copy(clone[y], (*g)[y])
+	}
+	return clone
+}
