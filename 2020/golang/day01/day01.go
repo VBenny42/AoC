@@ -26,8 +26,9 @@ func (d *day01) Part1() int {
 }
 
 func (d *day01) Part2() int {
-	for _, entry1 := range d.entries.Values() {
-		for _, entry2 := range d.entries.Values() {
+	values := d.entries.Values()
+	for _, entry1 := range values {
+		for _, entry2 := range values {
 			if entry1 == entry2 {
 				continue
 			}

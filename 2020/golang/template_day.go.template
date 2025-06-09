@@ -9,6 +9,10 @@ import (
 type template struct {
 }
 
+func (d *template) Part1() int {
+	return 0
+}
+
 func Parse(filename string) *template {
 	return &template{}
 }

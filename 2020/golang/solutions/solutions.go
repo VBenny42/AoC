@@ -3,7 +3,7 @@ package solutions
 import (
 	"fmt"
 	"github.com/VBenny42/AoC/2020/golang/day01"
-	// "github.com/VBenny42/AoC/2020/golang/day02"
+	"github.com/VBenny42/AoC/2020/golang/day02"
 	// "github.com/VBenny42/AoC/2020/golang/day03"
 	// "github.com/VBenny42/AoC/2020/golang/day04"
 	// "github.com/VBenny42/AoC/2020/golang/day05"
@@ -31,12 +31,12 @@ import (
 
 const (
 	ValidStart = 1
-	ValidEnd   = 1
+	ValidEnd   = 2
 )
 
 var days = map[int]func(){
 	1: func() { day01.Solve("inputs/day01/input.txt") },
-	// 2:  func() { day02.Solve("inputs/day02/input.txt") },
+	2: func() { day02.Solve("inputs/day02/input.txt") },
 	// 3:  func() { day03.Solve("inputs/day03/input.txt") },
 	// 4:  func() { day04.Solve("inputs/day04/input.txt") },
 	// 5:  func() { day05.Solve("inputs/day05/input.txt") },
