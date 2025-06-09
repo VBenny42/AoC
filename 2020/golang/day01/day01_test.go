@@ -10,7 +10,8 @@ import (
 func ExampleSolve() {
 	day01.Solve("inputs/day01/sample-input.txt")
 	// Output:
-	// ANSWER1: <answer1>:
+	// ANSWER1: product of 2 entries that sum to 2020: 514579
+	// ANSWER2: product of 3 entries that sum to 2020: 241861950
 }
 
 func BenchmarkSolve(b *testing.B) {
