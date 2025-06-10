@@ -139,11 +139,10 @@ func Parse(filename string) *day04 {
 		} else {
 			fields := strings.Fields(line)
 			for _, field := range fields {
-				parts := strings.Split(field, ":")
-				if len(parts) != 2 {
-					continue
+				key, value, ok := strings.Cut(field, ":")
+				if !ok {
+					panic(fmt.Sprintf("invalid field format: %s", field))
 				}
-				key, value := parts[0], parts[1]
 				current[key] = value
 			}
 		}
