@@ -43,17 +43,16 @@ func (d *day05) Part1() (maxSeatID int) {
 	return
 }
 
-func (d *day05) Part2() (missingSeatID int) {
+func (d *day05) Part2() int {
 	slices.Sort(d.ids)
 
 	for i := 0; i < len(d.ids)-1; i++ {
 		if d.ids[i+1] != d.ids[i]+1 {
-			missingSeatID = d.ids[i] + 1
-			break
+			return d.ids[i] + 1
 		}
 	}
 
-	return
+	return -1 // If no missing seat ID is found
 }
 
 func Parse(filename string) *day05 {

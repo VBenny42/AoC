@@ -27,6 +27,17 @@ func (s Set[T]) Contains(value T) bool {
 	return ok
 }
 
+// Intersection returns a new set that is the intersection of the two sets.
+func (s Set[T]) Intersection(other Set[T]) Set[T] {
+	intersection := make(Set[T])
+	for v := range s {
+		if other.Contains(v) {
+			intersection.Add(v)
+		}
+	}
+	return intersection
+}
+
 // Values returns a slice of all the values in the set.
 func (s Set[T]) Values() []T {
 	values := make([]T, 0, len(s))
