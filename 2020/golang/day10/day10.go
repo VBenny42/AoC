@@ -13,7 +13,7 @@ type day10 struct {
 
 func (d *day10) Part1() int {
 	var (
-		diffs = make(map[int]int)
+		diffs = make(map[int]int, 2)
 		prev  = 0
 	)
 

@@ -36,6 +36,18 @@ func (g *Grid[T]) Neighbors(p image.Point) (neighbors []image.Point) {
 	return
 }
 
+// AllNeighbors returns all neighbors including diagonals
+func (g *Grid[T]) AllNeighbors(p image.Point) (neighbors []image.Point) {
+	for _, d := range AllDirections {
+		neighbor := p.Add(d)
+		if g.InBounds(neighbor) {
+			neighbors = append(neighbors, neighbor)
+		}
+	}
+
+	return
+}
+
 func (g *Grid[T]) Clone() Grid[T] {
 	clone := NewGrid[T](len((*g)[0]), len((*g)))
 	for y := range *g {
