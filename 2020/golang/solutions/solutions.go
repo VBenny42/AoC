@@ -20,7 +20,7 @@ import (
 	"github.com/VBenny42/AoC/2020/golang/day16"
 	"github.com/VBenny42/AoC/2020/golang/day17"
 	"github.com/VBenny42/AoC/2020/golang/day18"
-	// "github.com/VBenny42/AoC/2020/golang/day19"
+	"github.com/VBenny42/AoC/2020/golang/day19"
 	// "github.com/VBenny42/AoC/2020/golang/day20"
 	// "github.com/VBenny42/AoC/2020/golang/day21"
 	// "github.com/VBenny42/AoC/2020/golang/day22"
@@ -31,7 +31,7 @@ import (
 
 const (
 	ValidStart = 1
-	ValidEnd   = 18
+	ValidEnd   = 19
 )
 
 var days = map[int]func(){
@@ -53,7 +53,7 @@ var days = map[int]func(){
 	16: func() { day16.Solve("inputs/day16/input.txt") },
 	17: func() { day17.Solve("inputs/day17/input.txt") },
 	18: func() { day18.Solve("inputs/day18/input.txt") },
-	// 19: func() { day19.Solve("inputs/day19/input.txt") },
+	19: func() { day19.Solve("inputs/day19/input.txt") },
 	// 20: func() { day20.Solve("inputs/day20/input.txt") },
 	// 21: func() { day21.Solve("inputs/day21/input.txt") },
 	// 22: func() { day22.Solve("inputs/day22/input.txt") },
