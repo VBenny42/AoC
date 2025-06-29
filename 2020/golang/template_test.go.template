@@ -1,0 +1,36 @@
+package template_test
+
+import (
+  "os"
+	"testing"
+
+	"github.com/VBenny42/AoC/2020/golang/template"
+)
+
+func ExampleSolve() {
+	template.Solve("inputs/template/sample-input.txt")
+  // Output:
+  // ANSWER1: <answer1>:
+}
+
+func BenchmarkSolve(b *testing.B) {
+	// b.ReportAllocs()
+
+	oldStdout := os.Stdout
+	null, err := os.Open(os.DevNull)
+	if err != nil {
+		b.Fatal(err)
+	}
+	os.Stdout = null
+
+	defer func() {
+		os.Stdout = oldStdout
+		null.Close()
+	}()
+
+  b.ResetTimer()
+
+	for range b.N {
+		template.Solve("inputs/template/input.txt")
+	}
+}

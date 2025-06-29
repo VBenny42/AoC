@@ -1,0 +1,24 @@
+package template
+
+import (
+	"fmt"
+
+	"github.com/VBenny42/AoC/2020/golang/utils"
+)
+
+type template struct {
+}
+
+func (d *template) Part1() int {
+	return 0
+}
+
+func Parse(filename string) *template {
+	return &template{}
+}
+
+func Solve(filename string) {
+	day := Parse(filename)
+
+	fmt.Println("ANSWER1: <answer1>:", day.Part1())
+}
