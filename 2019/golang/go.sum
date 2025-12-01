@@ -1,3 +1,5 @@
+github.com/mowshon/iterium v1.0.0 h1:04pku9dTNnfVvshf+DQIV3E92T/EwmnXKtXMkmZ3+5Q=
+github.com/mowshon/iterium v1.0.0/go.mod h1:Bnchn9HAYNQ/7MLUwKDyvjduSuVJQQwrNxmXJDqpXg4=
 golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 h1:bsqhLWFR6G6xiQcb+JoGqdKdRU6WzPWmK8E0jxTjzo4=
 golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476/go.mod h1:3//PLf8L/X+8b4vuAfHzxeRUl04Adcb341+IGKfnqS8=
 golang.org/x/image v0.28.0 h1:gdem5JW1OLS4FbkWgLO+7ZeFzYtL3xClb97GaUzYMFE=

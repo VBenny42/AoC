@@ -11,8 +11,11 @@ type day05 struct {
 	program []int
 }
 
-func processDay05(program []int, input int) (outputs []int) {
-	var ip int
+func ProcessDay05(program []int, inputs []int) (outputs []int) {
+	var (
+		ip         int // instruction pointer
+		inputIndex int
+	)
 
 	for ip < len(program) {
 		instruction := program[ip]
@@ -52,7 +55,8 @@ func processDay05(program []int, input int) (outputs []int) {
 			ip += 4
 		case 3: // input
 			pos1 := program[ip+1]
-			program[pos1] = input
+			program[pos1] = inputs[inputIndex]
+			inputIndex++
 			ip += 2
 		case 4: // output
 			pos1 := program[ip+1]
@@ -116,7 +120,7 @@ func (d *day05) Part1() int {
 	copy(programCopy, d.program)
 
 	// Run the program with input 1 (air conditioner unit ID)
-	outputs := processDay05(programCopy, 1)
+	outputs := ProcessDay05(programCopy, []int{1})
 
 	// The diagnostic code is the last output
 	if len(outputs) > 0 {
@@ -131,7 +135,7 @@ func (d *day05) Part2(id int) int {
 	copy(programCopy, d.program)
 
 	// Run the program with id
-	outputs := processDay05(programCopy, id)
+	outputs := ProcessDay05(programCopy, []int{id})
 
 	// The diagnostic code is the last output
 	if len(outputs) > 0 {
