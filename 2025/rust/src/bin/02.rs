@@ -10,30 +10,25 @@ fn parse(input: &str) -> Vec<&str> {
 
 fn is_invalid(id: &str) -> bool {
     let length = id.len();
-
-    if !length.is_multiple_of(2) {
-        return false;
-    }
-
-    for i in 0..(length / 2) {
-        if id.as_bytes()[i] != id.as_bytes()[length / 2 + i] {
-            return false;
+    if length.is_multiple_of(2) {
+        let half = length / 2;
+        if (0..half).all(|i| id.as_bytes()[i] == id.as_bytes()[half + i]) {
+            return true;
         }
     }
-
-    true
+    false
 }
 
 fn is_repeated_substring(s: &str) -> bool {
-    let n = s.len();
-    if n == 0 {
+    let length = s.len();
+    if length == 0 {
         return false;
     }
 
-    for p in 1..=n / 2 {
-        if n.is_multiple_of(p) {
+    for p in 1..=length / 2 {
+        if length.is_multiple_of(p) {
             let pattern = &s[..p];
-            if (p..n).step_by(p).all(|i| &s[i..i + p] == pattern) {
+            if (p..length).step_by(p).all(|i| &s[i..i + p] == pattern) {
                 return true;
             }
         }
