@@ -89,8 +89,8 @@ fn pattern_is_repeated(id: u64) -> bool {
 pub fn part_one(input: &str) -> Option<u64> {
     let day = match Day02::from_str(input) {
         Ok(day) => day,
-        Err(_) => {
-            eprintln!("Error parsing input");
+        Err(error) => {
+            eprintln!("Error parsing input {error:?}");
             return None;
         }
     };
@@ -120,8 +120,8 @@ pub fn part_one(input: &str) -> Option<u64> {
 pub fn part_two(input: &str) -> Option<u64> {
     let day = match Day02::from_str(input) {
         Ok(day) => day,
-        Err(_) => {
-            eprintln!("Error parsing input");
+        Err(error) => {
+            eprintln!("Error parsing input {error:?}");
             return None;
         }
     };
