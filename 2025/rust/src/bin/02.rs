@@ -22,6 +22,7 @@ impl FromStr for Day02 {
     }
 }
 
+#[allow(dead_code)]
 fn is_invalid(id: &str, multiple: usize) -> bool {
     let length = id.len();
     if !length.is_multiple_of(multiple) {
@@ -41,14 +42,44 @@ fn is_invalid(id: &str, multiple: usize) -> bool {
     true
 }
 
-fn is_repeated_substring(s: &str) -> bool {
-    let length = s.len();
-    if length == 0 {
+fn is_invalid_int(id: u64, multiple: usize) -> bool {
+    if id == 0 {
+        return multiple == 1;
+    }
+
+    let length = id.ilog10() as usize + 1;
+
+    if !length.is_multiple_of(multiple) {
+        return false;
+    }
+
+    let pattern_len = length / multiple;
+    let chunk_divisor = 10u64.pow(pattern_len as u32);
+
+    // Extract pattern (leftmost chunk)
+    let pattern = id / 10u64.pow((length - pattern_len) as u32);
+
+    // Check remaining chunks from right to left
+    let mut remaining = id;
+    for _ in 0..multiple {
+        let chunk = remaining % chunk_divisor;
+        if chunk != pattern {
+            return false;
+        }
+        remaining /= chunk_divisor;
+    }
+
+    true
+}
+
+fn pattern_is_repeated(id: u64) -> bool {
+    let length = if id == 0 { 1 } else { id.ilog10() as usize + 1 };
+    if id == 0 {
         return false;
     }
 
     for p in 1..=length / 2 {
-        if is_invalid(s, length / p) {
+        if is_invalid_int(id, length / p) {
             return true;
         }
     }
@@ -77,8 +108,7 @@ pub fn part_one(input: &str) -> Option<u64> {
         let end: u64 = pairs[1].parse().unwrap();
 
         for id_num in start..=end {
-            let id = id_num.to_string();
-            if is_invalid(&id, 2) {
+            if is_invalid_int(id_num, 2) {
                 sum += id_num;
             }
         }
@@ -109,8 +139,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         let end: u64 = pairs[1].parse().unwrap();
 
         for id_num in start..=end {
-            let id = id_num.to_string();
-            if is_repeated_substring(&id) {
+            if pattern_is_repeated(id_num) {
                 sum += id_num;
             }
         }
