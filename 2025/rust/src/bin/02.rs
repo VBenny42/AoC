@@ -1,13 +1,25 @@
+use std::str::FromStr;
+
 advent_of_code::solution!(2);
 
 // Brute-force solution, can't be bothered to optimize right now
 
-fn parse(input: &str) -> Vec<&str> {
-    input
-        .lines()
-        .next()
-        .map(|line| line.split(",").collect())
-        .unwrap()
+struct Day02 {
+    ids: Vec<String>,
+}
+
+impl FromStr for Day02 {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        let ids = input
+            .lines()
+            .next()
+            .map(|line| line.split(",").map(|s| s.to_string()).collect())
+            .unwrap();
+
+        Ok(Day02 { ids })
+    }
 }
 
 fn is_invalid(id: &str, multiple: usize) -> bool {
@@ -44,7 +56,7 @@ fn is_repeated_substring(s: &str) -> bool {
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
-    let ids = parse(input);
+    let ids = Day02::from_str(input).ok()?.ids;
 
     let mut sum = 0;
 
@@ -70,7 +82,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let ids = parse(input);
+    let ids = Day02::from_str(input).ok()?.ids;
 
     let mut sum = 0;
 
