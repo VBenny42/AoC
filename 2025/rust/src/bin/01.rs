@@ -11,8 +11,8 @@ const INITIAL_VALUE: i32 = 50;
 
 #[derive(Debug, Error)]
 pub enum ParseError {
-    #[error("Invalid rotation in input")]
-    InvalidRotation,
+    #[error("Invalid rotation in input: {0}")]
+    InvalidRotation(String),
     #[error("Parse int error: {0}")]
     ParseIntError(#[from] ParseIntError),
 }
@@ -27,7 +27,7 @@ impl FromStr for Day01 {
                 match sign {
                     "L" => Ok(-number.parse::<i32>()?),
                     "R" => Ok(number.parse::<i32>()?),
-                    _ => Err(ParseError::InvalidRotation),
+                    _ => Err(ParseError::InvalidRotation(sign.to_string())),
                 }
             })
             .collect::<Result<Vec<i32>, ParseError>>()?;
@@ -40,7 +40,15 @@ pub fn part_one(input: &str) -> Option<u64> {
 
     let mut current_value = INITIAL_VALUE;
 
-    for value in Day01::from_str(input).ok()?.values {
+    let day = match Day01::from_str(input) {
+        Ok(day) => day,
+        Err(error) => {
+            eprintln!("Error parsing input: {}", error);
+            return None;
+        }
+    };
+
+    for value in day.values {
         current_value = (current_value + value).rem_euclid(MOD);
 
         if current_value == 0 {
@@ -56,7 +64,15 @@ pub fn part_two(input: &str) -> Option<u64> {
 
     let mut current_value = INITIAL_VALUE;
 
-    for value in Day01::from_str(input).ok()?.values {
+    let day = match Day01::from_str(input) {
+        Ok(day) => day,
+        Err(error) => {
+            eprintln!("Error parsing input: {}", error);
+            return None;
+        }
+    };
+
+    for value in day.values {
         let new_value = (current_value + value).rem_euclid(MOD);
 
         let (start, end) = match value.signum() {

@@ -56,11 +56,17 @@ fn is_repeated_substring(s: &str) -> bool {
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
-    let ids = Day02::from_str(input).ok()?.ids;
+    let day = match Day02::from_str(input) {
+        Ok(day) => day,
+        Err(_) => {
+            eprintln!("Error parsing input");
+            return None;
+        }
+    };
 
     let mut sum = 0;
 
-    for pair in ids {
+    for pair in day.ids {
         let pairs = pair.splitn(2, "-").collect::<Vec<&str>>();
         if pairs.len() != 2 {
             println!("Invalid pair: {}", pair);
@@ -82,11 +88,17 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let ids = Day02::from_str(input).ok()?.ids;
+    let day = match Day02::from_str(input) {
+        Ok(day) => day,
+        Err(_) => {
+            eprintln!("Error parsing input");
+            return None;
+        }
+    };
 
     let mut sum = 0;
 
-    for pair in ids {
+    for pair in day.ids {
         let pairs = pair.splitn(2, "-").collect::<Vec<&str>>();
         if pairs.len() != 2 {
             println!("Invalid pair: {}", pair);
