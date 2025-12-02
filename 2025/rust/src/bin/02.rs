@@ -1,5 +1,7 @@
 advent_of_code::solution!(2);
 
+// Brute-force solution, can't be bothered to optimize right now
+
 fn parse(input: &str) -> Vec<&str> {
     input
         .lines()
@@ -8,15 +10,23 @@ fn parse(input: &str) -> Vec<&str> {
         .unwrap()
 }
 
-fn is_invalid(id: &str) -> bool {
+fn is_invalid(id: &str, multiple: usize) -> bool {
     let length = id.len();
-    if length.is_multiple_of(2) {
-        let half = length / 2;
-        if (0..half).all(|i| id.as_bytes()[i] == id.as_bytes()[half + i]) {
-            return true;
+    if !length.is_multiple_of(multiple) {
+        return false;
+    }
+
+    let pattern_len = length / multiple;
+    let pattern = &id[..pattern_len];
+
+    // Check chunk by chunk
+    for chunk_start in (pattern_len..length).step_by(pattern_len) {
+        if &id[chunk_start..chunk_start + pattern_len] != pattern {
+            return false;
         }
     }
-    false
+
+    true
 }
 
 fn is_repeated_substring(s: &str) -> bool {
@@ -26,14 +36,10 @@ fn is_repeated_substring(s: &str) -> bool {
     }
 
     for p in 1..=length / 2 {
-        if length.is_multiple_of(p) {
-            let pattern = &s[..p];
-            if (p..length).step_by(p).all(|i| &s[i..i + p] == pattern) {
-                return true;
-            }
+        if is_invalid(s, length / p) {
+            return true;
         }
     }
-
     false
 }
 
@@ -54,7 +60,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 
         for id_num in start..=end {
             let id = id_num.to_string();
-            if is_invalid(&id) {
+            if is_invalid(&id, 2) {
                 sum += id_num;
             }
         }
