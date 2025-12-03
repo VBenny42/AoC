@@ -43,6 +43,7 @@ pub fn handle(day: Day, overwrite: bool) {
     match file.write_all(
         MODULE_TEMPLATE
             .replace("%DAY_NUMBER%", &day.into_inner().to_string())
+            .replace("%DAY_STRUCT%", format!("Day{day}").as_str())
             .as_bytes(),
     ) {
         Ok(()) => {
