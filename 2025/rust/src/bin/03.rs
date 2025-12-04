@@ -7,7 +7,12 @@ struct Day03 {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum ParseError {}
+pub enum ParseError {
+    #[error("0 in input file")]
+    ZeroEncountered,
+    #[error("Invalid character found: {0}")]
+    InvalidChar(char),
+}
 
 impl FromStr for Day03 {
     type Err = ParseError;
@@ -18,10 +23,14 @@ impl FromStr for Day03 {
             .lines()
             .map(|line| {
                 line.chars()
-                    .map(|c| c.to_digit(10).unwrap() as u8)
-                    .collect::<Vec<u8>>()
+                    .map(|c| match c.to_digit(10) {
+                        None => Err(ParseError::InvalidChar(c)),
+                        Some(0) => Err(ParseError::ZeroEncountered),
+                        Some(d) => Ok(d as u8),
+                    })
+                    .collect::<Result<Vec<u8>, ParseError>>()
             })
-            .collect::<Vec<Vec<u8>>>();
+            .collect::<Result<Vec<Vec<u8>>, ParseError>>()?;
 
         Ok(Day03 { banks })
     }
