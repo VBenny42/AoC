@@ -5,7 +5,6 @@ use std::str::FromStr;
 enum Spot {
     Empty,
     Paper,
-    Accessible,
 }
 
 type Position = (usize, usize);
@@ -81,7 +80,6 @@ impl Day04 {
                 let pixel = match spot {
                     Spot::Empty => Rgb([255, 255, 255]),
                     Spot::Paper => Rgb([0, 0, 0]),
-                    Spot::Accessible => Rgb([255, 0, 0]),
                 };
                 img.put_pixel(j as u32, i as u32, pixel);
             }
@@ -89,50 +87,51 @@ impl Day04 {
 
         img
     }
+
+    fn remove_papers(&mut self) -> usize {
+        let mut accessible_positions = Vec::<Position>::new();
+
+        for (i, row) in self.grid.iter().enumerate() {
+            for (j, spot) in row.iter().enumerate() {
+                if let Spot::Paper = spot {
+                    let neighbors = self
+                        .get_neighbors((j, i))
+                        .iter()
+                        .filter(|(x, y)| matches!(self.grid[*y][*x], Spot::Paper))
+                        .count();
+                    if neighbors < 4 {
+                        accessible_positions.push((j, i));
+                    }
+                }
+            }
+        }
+
+        for (x, y) in accessible_positions.iter() {
+            self.grid[*y][*x] = Spot::Empty;
+        }
+
+        accessible_positions.len()
+    }
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
-    let day = match Day04::from_str(input) {
+    let mut day = match Day04::from_str(input) {
         Ok(day) => day,
         Err(error) => {
             eprintln!("Error parsing input: {:?}", error);
             return None;
         }
     };
-
-    let mut accessible_spots = 0;
-
-    // let mut accessible_positions = Vec::<Position>::new();
-
-    for (i, row) in day.grid.iter().enumerate() {
-        for (j, spot) in row.iter().enumerate() {
-            if let Spot::Paper = spot {
-                let neighbors = day
-                    .get_neighbors((j, i))
-                    .iter()
-                    .filter(|(x, y)| matches!(day.grid[*y][*x], Spot::Paper))
-                    .count();
-                if neighbors < 4 {
-                    accessible_spots += 1;
-                    // accessible_positions.push((j, i));
-                }
-            }
-        }
-    }
-
-    // for (x, y) in accessible_positions.iter() {
-    //     day.grid[*y][*x] = Spot::Accessible;
-    // }
 
     // Uncomment for image
     // let img = day.to_image();
     // img.save("day04_part1.png").unwrap();
 
-    Some(accessible_spots)
+    Some(day.remove_papers() as u64)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let _day = match Day04::from_str(input) {
+    let mut day = match Day04::from_str(input) {
         Ok(day) => day,
         Err(error) => {
             eprintln!("Error parsing input: {:?}", error);
@@ -140,7 +139,17 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
     };
 
-    None
+    let mut total_papers_removed = 0;
+
+    loop {
+        let papers_removed = day.remove_papers();
+        if papers_removed == 0 {
+            break;
+        }
+        total_papers_removed += papers_removed;
+    }
+
+    Some(total_papers_removed as u64)
 }
 
 #[cfg(test)]
@@ -156,6 +165,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(43));
     }
 }
