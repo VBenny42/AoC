@@ -1,4 +1,5 @@
 advent_of_code::solution!(%DAY_NUMBER%);
+
 use std::str::FromStr;
 
 struct %DAY_STRUCT% {

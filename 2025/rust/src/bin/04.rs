@@ -1,5 +1,7 @@
 advent_of_code::solution!(4);
+
 use image::{ImageBuffer, Rgb};
+
 use std::str::FromStr;
 
 enum Spot {

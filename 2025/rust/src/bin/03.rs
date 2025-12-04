@@ -1,6 +1,6 @@
-use std::str::FromStr;
-
 advent_of_code::solution!(3);
+
+use std::str::FromStr;
 
 struct Day03 {
     banks: Vec<Vec<u8>>,

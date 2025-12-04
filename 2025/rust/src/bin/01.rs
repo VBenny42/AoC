@@ -1,6 +1,8 @@
 advent_of_code::solution!(1);
-use std::{num::ParseIntError, str::FromStr};
+
 use thiserror::Error;
+
+use std::{num::ParseIntError, str::FromStr};
 
 struct Day01 {
     values: Vec<i32>,

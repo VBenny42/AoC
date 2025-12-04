@@ -1,6 +1,6 @@
-use std::str::FromStr;
-
 advent_of_code::solution!(2);
+
+use std::str::FromStr;
 
 // Brute-force solution, can't be bothered to optimize right now
 
