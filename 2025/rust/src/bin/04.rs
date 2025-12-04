@@ -14,7 +14,10 @@ struct Day04 {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum ParseError {}
+pub enum ParseError {
+    #[error("Invalid Character in input: {0}")]
+    InvalidCharacter(char),
+}
 
 impl FromStr for Day04 {
     type Err = ParseError;
@@ -25,22 +28,22 @@ impl FromStr for Day04 {
             .map(|line| {
                 line.chars()
                     .map(|ch| match ch {
-                        '.' => Spot::Empty,
-                        '@' => Spot::Paper,
-                        _ => Spot::Empty, // Shouldn't happen
+                        '.' => Ok(Spot::Empty),
+                        '@' => Ok(Spot::Paper),
+                        _ => Err(ParseError::InvalidCharacter(ch)),
                     })
-                    .collect()
+                    .collect::<Result<Vec<Spot>, Self::Err>>()
             })
-            .collect();
+            .collect::<Result<Vec<Vec<Spot>>, Self::Err>>()?;
 
         Ok(Day04 { grid })
     }
 }
 
 impl Day04 {
-    fn get_neighbors(&self, position: Position) -> Vec<Position> {
+    fn correct_papers(&self, position: Position) -> bool {
         let (x, y) = position;
-        let mut neighbors = Vec::new();
+        let mut paper_neighbors = 0;
 
         let directions = [
             (-1, 0),
@@ -61,12 +64,13 @@ impl Day04 {
                 && new_x < self.grid[0].len() as isize
                 && new_y >= 0
                 && new_y < self.grid.len() as isize
+                && matches!(self.grid[new_y as usize][new_x as usize], Spot::Paper)
             {
-                neighbors.push((new_x as usize, new_y as usize));
+                paper_neighbors += 1;
             }
         }
 
-        neighbors
+        paper_neighbors < 4
     }
 
     #[allow(dead_code)]
@@ -78,8 +82,8 @@ impl Day04 {
         for (i, row) in self.grid.iter().enumerate() {
             for (j, spot) in row.iter().enumerate() {
                 let pixel = match spot {
-                    Spot::Empty => Rgb([255, 255, 255]),
-                    Spot::Paper => Rgb([0, 0, 0]),
+                    Spot::Empty => Rgb([0, 0, 0]),
+                    Spot::Paper => Rgb([255, 255, 255]),
                 };
                 img.put_pixel(j as u32, i as u32, pixel);
             }
@@ -93,15 +97,8 @@ impl Day04 {
 
         for (i, row) in self.grid.iter().enumerate() {
             for (j, spot) in row.iter().enumerate() {
-                if let Spot::Paper = spot {
-                    let neighbors = self
-                        .get_neighbors((j, i))
-                        .iter()
-                        .filter(|(x, y)| matches!(self.grid[*y][*x], Spot::Paper))
-                        .count();
-                    if neighbors < 4 {
+                if let Spot::Paper = spot && self.correct_papers((j, i)) {
                         accessible_positions.push((j, i));
-                    }
                 }
             }
         }
@@ -123,7 +120,7 @@ pub fn part_one(input: &str) -> Option<u64> {
         }
     };
 
-    // Uncomment for image
+    // // Uncomment for image
     // let img = day.to_image();
     // img.save("day04_part1.png").unwrap();
 
@@ -148,6 +145,10 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
         total_papers_removed += papers_removed;
     }
+
+    // // Uncomment for image
+    // let img = day.to_image();
+    // img.save("day04_part2.png").unwrap();
 
     Some(total_papers_removed as u64)
 }
