@@ -1,6 +1,5 @@
 advent_of_code::solution!(4);
 use image::{ImageBuffer, Rgb};
-use std::collections::HashMap;
 use std::str::FromStr;
 
 enum Spot {
@@ -11,9 +10,7 @@ enum Spot {
 type Position = (usize, usize);
 
 struct Day04 {
-    grid_set: HashMap<Position, Spot>,
-    height: usize,
-    width: usize,
+    grid: Vec<Vec<Spot>>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -26,30 +23,20 @@ impl FromStr for Day04 {
     type Err = ParseError;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
-        let mut grid_set = HashMap::<Position, Spot>::new();
+        let grid = input
+            .lines()
+            .map(|line| {
+                line.chars()
+                    .map(|ch| match ch {
+                        '.' => Ok(Spot::Empty),
+                        '@' => Ok(Spot::Paper),
+                        _ => Err(ParseError::InvalidCharacter(ch)),
+                    })
+                    .collect::<Result<Vec<Spot>, Self::Err>>()
+            })
+            .collect::<Result<Vec<Vec<Spot>>, Self::Err>>()?;
 
-        let mut height = 0;
-        let mut width = 0;
-
-        for (y, line) in input.lines().enumerate() {
-            height = y + 1;
-            width = line.len();
-
-            for (x, ch) in line.chars().enumerate() {
-                let spot = match ch {
-                    '.' => Spot::Empty,
-                    '@' => Spot::Paper,
-                    _ => return Err(ParseError::InvalidCharacter(ch)),
-                };
-                grid_set.insert((x, y), spot);
-            }
-        }
-
-        Ok(Day04 {
-            grid_set,
-            height,
-            width,
-        })
+        Ok(Day04 { grid })
     }
 }
 
@@ -73,10 +60,12 @@ impl Day04 {
             let new_x = x as isize + dx;
             let new_y = y as isize + dy;
 
-            if matches!(
-                self.grid_set.get(&(new_x as usize, new_y as usize)),
-                Some(Spot::Paper),
-            ) {
+            if new_x >= 0
+                && new_x < self.grid[0].len() as isize
+                && new_y >= 0
+                && new_y < self.grid.len() as isize
+                && matches!(self.grid[new_y as usize][new_x as usize], Spot::Paper)
+            {
                 paper_neighbors += 1;
             }
         }
@@ -86,14 +75,18 @@ impl Day04 {
 
     #[allow(dead_code)]
     fn to_image(&self) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
-        let mut img = ImageBuffer::new(self.width as u32, self.height as u32);
+        let width = self.grid[0].len() as u32;
+        let height = self.grid.len() as u32;
+        let mut img = ImageBuffer::new(width, height);
 
-        for (position, spot) in &self.grid_set {
-            let pixel = match spot {
-                Spot::Empty => Rgb([0, 0, 0]),
-                Spot::Paper => Rgb([255, 255, 255]),
-            };
-            img.put_pixel(position.0 as u32, position.1 as u32, pixel);
+        for (i, row) in self.grid.iter().enumerate() {
+            for (j, spot) in row.iter().enumerate() {
+                let pixel = match spot {
+                    Spot::Empty => Rgb([0, 0, 0]),
+                    Spot::Paper => Rgb([255, 255, 255]),
+                };
+                img.put_pixel(j as u32, i as u32, pixel);
+            }
         }
 
         img
@@ -102,18 +95,18 @@ impl Day04 {
     fn remove_papers(&mut self) -> usize {
         let mut accessible_positions = Vec::<Position>::new();
 
-        for (position, spot) in &self.grid_set {
-            if let Spot::Paper = spot
-                && self.correct_papers(*position)
-            {
-                accessible_positions.push(*position);
+        for (i, row) in self.grid.iter().enumerate() {
+            for (j, spot) in row.iter().enumerate() {
+                if let Spot::Paper = spot
+                    && self.correct_papers((j, i))
+                {
+                    accessible_positions.push((j, i));
+                }
             }
         }
 
-        for position in accessible_positions.iter() {
-            self.grid_set
-                .entry(*position)
-                .and_modify(|spot| *spot = Spot::Empty);
+        for (x, y) in accessible_positions.iter() {
+            self.grid[*y][*x] = Spot::Empty;
         }
 
         accessible_positions.len()
