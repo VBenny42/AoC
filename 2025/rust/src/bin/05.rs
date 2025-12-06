@@ -47,7 +47,12 @@ impl FromStr for Day05 {
             }
         }
 
-        Ok(Day05 { ranges, items })
+        let sorted_ranges = merge_overlapping_ranges(&mut ranges);
+
+        Ok(Day05 {
+            ranges: sorted_ranges,
+            items,
+        })
     }
 }
 
@@ -88,7 +93,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let mut day = match Day05::from_str(input) {
+    let day = match Day05::from_str(input) {
         Ok(day) => day,
         Err(error) => {
             eprintln!("Error parsing input: {:?}", error);
@@ -96,10 +101,8 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
     };
 
-    let merged_ranges = merge_overlapping_ranges(&mut day.ranges);
-
     Some(
-        merged_ranges
+        day.ranges
             .iter()
             .map(|range| range.end - range.start)
             .sum::<u64>(),
