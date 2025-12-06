@@ -84,12 +84,20 @@ pub fn part_one(input: &str) -> Option<u64> {
         }
     };
 
-    Some(
-        day.items
-            .iter()
-            .filter(|item| day.ranges.iter().any(|range| range.contains(item)))
-            .count() as u64,
-    )
+    let is_fresh = |item: &u64| -> bool {
+        for range in &day.ranges {
+            // Can do since ranges are sorted
+            if item < &range.start {
+                break;
+            }
+            if range.contains(item) {
+                return true;
+            }
+        }
+        false
+    };
+
+    Some(day.items.iter().filter(|item| is_fresh(item)).count() as u64)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
