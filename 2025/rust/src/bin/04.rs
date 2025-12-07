@@ -1,5 +1,6 @@
 advent_of_code::solution!(4);
 
+use advent_of_code::Grid;
 use image::{ImageBuffer, Rgb};
 
 use std::str::FromStr;
@@ -12,7 +13,7 @@ enum Spot {
 type Position = (usize, usize);
 
 struct Day04 {
-    grid: Vec<Vec<Spot>>,
+    grid: Grid<Spot>,
 }
 
 #[derive(Debug, thiserror::Error)]

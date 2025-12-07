@@ -124,7 +124,7 @@ pub fn part_two(input: &str) -> Option<u64> {
 
         match on_new_problem {
             true => {
-                let operator = trimmed.chars().last().unwrap();
+                let operator = trimmed[len - 1..].chars().next().unwrap();
                 if operator != '+' && operator != '*' {
                     eprintln!("Error parsing input: Invalid operator {}", operator);
                     return None;
