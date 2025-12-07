@@ -144,6 +144,54 @@ pub fn part_one(input: &str) -> Option<u64> {
     Some(split as u64)
 }
 
+fn count_timelines(manifold: &Grid<Spot>) -> u64 {
+    let width = manifold[0].len();
+
+    // Initialize first row count
+    let mut current_row_counts = manifold[0]
+        .iter()
+        .map(|spot| match spot {
+            Spot::Source => 1u64,
+            _ => 0u64,
+        })
+        .collect::<Vec<u64>>();
+
+    // Iterate through the rest
+    for row in manifold.iter().skip(1) {
+        let mut next_row_counts = vec![0u64; width];
+
+        for x in 0..width {
+            let n = current_row_counts[x];
+            if n == 0 {
+                continue; // No tachyons in this column
+            }
+
+            match &row[x] {
+                Spot::Empty | Spot::Source => {
+                    // n tachyons continue straight down
+                    next_row_counts[x] += n;
+                }
+                Spot::Splitter => {
+                    // Split left (x-1)
+                    if x > 0 {
+                        next_row_counts[x - 1] += n;
+                    }
+                    // Split right (x+1)
+                    if x + 1 < width {
+                        next_row_counts[x + 1] += n;
+                    }
+                }
+                // Rays aren't actually added for part two
+                _ => unreachable!(),
+            }
+        }
+
+        current_row_counts = next_row_counts;
+    }
+
+    current_row_counts.iter().sum()
+}
+
 pub fn part_two(input: &str) -> Option<u64> {
     let day = match Day07::from_str(input) {
         Ok(day) => day,
@@ -153,7 +201,7 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
     };
 
-    None
+    Some(count_timelines(&day.manifold))
 }
 
 #[cfg(test)]
@@ -169,6 +217,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(40));
     }
 }
