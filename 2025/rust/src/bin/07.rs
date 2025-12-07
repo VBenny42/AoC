@@ -9,7 +9,7 @@ enum Spot {
     Empty,
     Source,
     Splitter,
-    Ray(u64),
+    Ray,
 }
 
 struct Day07 {
@@ -58,51 +58,45 @@ fn traverse_manifold(manifold: &mut Grid<Spot>) -> Result<u64, String> {
             match spot {
                 Spot::Source => {
                     let down_pos = point + DOWN;
-                    manifold.set(&down_pos, Spot::Ray(1))?;
+                    manifold.set(&down_pos, Spot::Ray)?;
                 }
                 // Copy down any rays coming from above
                 Spot::Empty => {
                     let up_pos = point + UP;
-                    if let Some(Spot::Ray(beam_num)) = manifold.get(&up_pos) {
-                        manifold.set(&point, Spot::Ray(*beam_num))?;
+                    if let Some(Spot::Ray) = manifold.get(&up_pos) {
+                        manifold.set(&point, Spot::Ray)?;
                     }
                 }
                 Spot::Splitter => {
                     let up_pos = point + UP;
                     let mut actions = Vec::<(Spot, Point)>::new();
-                    if let Some(Spot::Ray(beam_num)) = manifold.get(&up_pos) {
+                    if let Some(Spot::Ray) = manifold.get(&up_pos) {
                         let left_pos = point + LEFT;
                         match manifold.get(&left_pos) {
-                            Some(Spot::Empty) => {
-                                actions.push((Spot::Ray(*beam_num), left_pos));
-                            }
-                            Some(Spot::Ray(existing_num)) => {
-                                actions.push((Spot::Ray(existing_num + beam_num), left_pos));
+                            Some(Spot::Empty) | Some(Spot::Ray) => {
+                                actions.push((Spot::Ray, left_pos));
                             }
                             _ => unreachable!(),
                         }
                         let right_pos = point + RIGHT;
                         match manifold.get(&right_pos) {
-                            Some(Spot::Empty) => {
-                                actions.push((Spot::Ray(*beam_num), right_pos));
-                            }
-                            Some(Spot::Ray(existing_num)) => {
-                                actions.push((Spot::Ray(existing_num + beam_num), right_pos));
+                            Some(Spot::Empty) | Some(Spot::Ray) => {
+                                actions.push((Spot::Ray, right_pos));
                             }
                             _ => unreachable!(),
                         }
 
-                        total_split += 1; // ← Move it here, inside the if
+                        total_split += 1;
 
                         for (new_spot, pos) in actions {
                             manifold.set(&pos, new_spot)?;
                         }
                     }
                 }
-                Spot::Ray(beam_num) => {
+                Spot::Ray => {
                     let down_pos = point + DOWN;
                     if let Some(Spot::Empty) = manifold.get(&down_pos) {
-                        manifold.set(&down_pos, Spot::Ray(beam_num))?;
+                        manifold.set(&down_pos, Spot::Ray)?;
                     }
                     // Splitter case handled above
                 }
