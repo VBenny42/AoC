@@ -30,6 +30,7 @@ dependencies = [
  "chrono",
  "dhat",
  "image",
+ "itertools",
  "pico-args",
  "thiserror",
  "tinyjson",
