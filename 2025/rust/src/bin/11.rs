@@ -1,12 +1,9 @@
 advent_of_code::solution!(11);
 
-use std::{
-    collections::{HashMap, HashSet},
-    str::FromStr,
-};
+use std::{collections::HashMap, str::FromStr};
 
 struct Day11 {
-    devices: HashMap<String, HashSet<String>>,
+    devices: HashMap<String, Vec<String>>,
     cache: HashMap<(String, String), u64>,
 }
 
@@ -22,33 +19,27 @@ impl Day11 {
         self.devices.insert(name, connections.into_iter().collect());
     }
 
-    fn traverse(&mut self, start: &str, end: &str) -> u64 {
+    fn count_paths(&mut self, start: &str, end: &str) -> u64 {
         if let Some(&cached) = self.cache.get(&(start.to_string(), end.to_string())) {
             return cached;
         }
-        let num = self.count_paths(start, end, &mut HashSet::new());
-        self.cache.insert((start.to_string(), end.to_string()), num);
-        num
-    }
 
-    fn count_paths(&self, current: &str, end: &str, visited: &mut HashSet<String>) -> u64 {
-        if current == end {
+        if start == end {
+            self.cache.insert((start.to_string(), end.to_string()), 1);
             return 1;
         }
 
-        // No cycles are in the input, so we don't need to track visited nodes.
-        // if visited.contains(current) {
-        //     return 0;
-        // }
+        let neighbors = self.devices.get(start).cloned();
 
-        // visited.insert(current.to_string());
         let mut total = 0;
-        if let Some(neighbors) = self.devices.get(current) {
+        if let Some(neighbors) = neighbors {
             for neighbor in neighbors {
-                total += self.count_paths(neighbor, end, visited);
+                total += self.count_paths(&neighbor, end);
             }
         }
-        // visited.remove(current);
+
+        self.cache
+            .insert((start.to_string(), end.to_string()), total);
         total
     }
 }
@@ -89,7 +80,7 @@ pub fn part_one(input: &str) -> Option<u64> {
         }
     };
 
-    Some(day.traverse("you", "out"))
+    Some(day.count_paths("you", "out"))
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
@@ -101,8 +92,13 @@ pub fn part_two(input: &str) -> Option<u64> {
         }
     };
 
-    // From looking at input, "fft" always is before "dac"
-    Some(day.traverse("svr", "fft") * day.traverse("fft", "dac") * day.traverse("dac", "out"))
+    // From looking at input, "fft" is always before "dac"
+    // "svr" -> "fft" -> "dac" -> "out" is equivalent to "svr" -> "out"
+    Some(
+        day.count_paths("svr", "fft")
+            * day.count_paths("fft", "dac")
+            * day.count_paths("dac", "out"),
+    )
 }
 
 #[cfg(test)]
