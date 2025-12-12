@@ -1,0 +1,59 @@
+advent_of_code::solution!(%DAY_NUMBER%);
+
+use std::str::FromStr;
+
+struct %DAY_STRUCT% {
+    // Add fields here
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum ParseError {}
+
+impl FromStr for %DAY_STRUCT% {
+    type Err = ParseError;
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        todo!()
+    }
+}
+
+pub fn part_one(input: &str) -> Option<u64> {
+    let day = match %DAY_STRUCT%::from_str(input) {
+        Ok(day) => day,
+        Err(error) => {
+            eprintln!("Error parsing input: {:?}", error);
+            return None;
+        }
+    };
+
+    None
+}
+
+pub fn part_two(input: &str) -> Option<u64> {
+    let day = match %DAY_STRUCT%::from_str(input) {
+        Ok(day) => day,
+        Err(error) => {
+            eprintln!("Error parsing input: {:?}", error);
+            return None;
+        }
+    };
+
+    None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let result = part_one(&advent_of_code::template::read_file("examples", DAY));
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let result = part_two(&advent_of_code::template::read_file("examples", DAY));
+        assert_eq!(result, None);
+    }
+}
